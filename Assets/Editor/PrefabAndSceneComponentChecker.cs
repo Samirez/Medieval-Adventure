@@ -221,5 +221,53 @@ public class PrefabAndSceneComponentChecker : EditorWindow
         }
         return path;
     }
+
+    // Helper: returns true if the provided name looks like an enemy name
+    private static bool IsEnemyLike(string name)
+    {
+        if (string.IsNullOrEmpty(name)) return false;
+
+        // Whole-word regex for enemy or npc
+        if (!Regex.IsMatch(name, @"\b(enemy|npc)\b", RegexOptions.IgnoreCase))
+        {
+            return false;
+        }
+
+        // Exclude common non-enemy tokens to reduce false positives
+        string lower = name.ToLower();
+        foreach (var ex in EnemyNameExclusions)
+        {
+            if (lower.Contains(ex)) return false;
+        }
+
+        return true;
+    }
+
+    // Overload: check by path and prefab name, and also allow folder-based or tag/component heuristics
+    private static bool IsEnemyLike(string path, GameObject prefab)
+    {
+        if (string.IsNullOrEmpty(path) == false)
+        {
+            string fileName = Path.GetFileNameWithoutExtension(path);
+            if (IsEnemyLike(fileName)) return true;
+
+            string lowerPath = path.ToLower();
+            // Allow explicit folder placement to classify as enemy
+            if (lowerPath.Contains("/enemies/") || lowerPath.Contains("/npcs/")) return true;
+        }
+
+        if (prefab != null)
+        {
+            if (IsEnemyLike(prefab.name)) return true;
+            // If prefab has tag 'Enemy', treat it as enemy
+            try
+            {
+                if (!string.IsNullOrEmpty(prefab.tag) && prefab.CompareTag("Enemy")) return true;
+            }
+            catch { }
+        }
+
+        return false;
+    }
 }
 #endif
