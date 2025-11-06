@@ -26,9 +26,13 @@ namespace RPG.Control
         private bool InteractWithCombat()
         {
             RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
+            // Sort hits by distance so we consider the closest first
+            System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+
             foreach (RaycastHit hit in hits)
             {
-                Health target = hit.transform.GetComponent<Health>();
+                // Use GetComponentInParent to handle clicks on child colliders
+                Health target = hit.transform.GetComponentInParent<Health>();
                 if (target == null || target.IsDead()) continue;
 
                 if (GetComponent<Fighter>().CanAttack(target.gameObject))
