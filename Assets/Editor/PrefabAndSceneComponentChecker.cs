@@ -1,6 +1,9 @@
 #if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -8,6 +11,19 @@ using RPG.Resources;
 
 public class PrefabAndSceneComponentChecker : EditorWindow
 {
+    private static readonly System.Type[] CombatTypes = new System.Type[] {
+        typeof(RPG.Resources.Health),
+        typeof(RPG.Combat.Fighter),
+        typeof(RPG.Stats.BaseStats),
+        typeof(RPG.Resources.Experience),
+        typeof(RPG.Core.ActionScheduler),
+        typeof(RPG.Movement.Mover)
+    };
+
+    // exclusion tokens to avoid false positives for names like EnemySpawner, EnemyHealthBar, etc.
+    private static readonly string[] EnemyNameExclusions = new string[] {
+        "spawner", "health", "manager", "dialog", "ui", "bar", "pickup", "controller", "creator", "display", "hud"
+    };
     [MenuItem("Tools/Scan Prefabs for Missing Components and Health")]
     public static void ShowWindow()
     {
@@ -43,15 +59,7 @@ public class PrefabAndSceneComponentChecker : EditorWindow
 
         int missingScriptCount = 0;
 
-        // Components we consider relevant for combat/enemy prefabs
-        var combatTypes = new System.Type[] {
-            typeof(RPG.Resources.Health),
-            typeof(RPG.Combat.Fighter),
-            typeof(RPG.Stats.BaseStats),
-            typeof(RPG.Resources.Experience),
-            typeof(RPG.Core.ActionScheduler),
-            typeof(RPG.Movement.Mover)
-        };
+        // Use the shared CombatTypes constant
 
         foreach (string guid in guids)
         {
@@ -76,15 +84,13 @@ public class PrefabAndSceneComponentChecker : EditorWindow
                 }
             }
 
-            // Heuristic: if prefab name or path contains 'enemy' or 'npc', check for combat components
-            string lowerPath = path.ToLower();
-            string lowerName = prefab.name.ToLower();
-            bool looksLikeEnemy = lowerPath.Contains("enemy") || lowerName.Contains("enemy") || lowerPath.Contains("npc") || lowerName.Contains("npc");
+            // Heuristic: refined enemy detection to reduce false positives
+            bool looksLikeEnemy = IsEnemyLike(path, prefab);
 
             if (looksLikeEnemy)
             {
                 // Check for presence of each combat related component somewhere on the prefab hierarchy
-                foreach (var t in combatTypes)
+                foreach (var t in CombatTypes)
                 {
                     var found = false;
                     foreach (Transform child in prefab.GetComponentsInChildren<Transform>(true))
@@ -110,31 +116,30 @@ public class PrefabAndSceneComponentChecker : EditorWindow
 
         reportLines.Add($"Missing scripts (count): {missingScriptCount}");
 
-        // Write report to project root
+        // Write report to project root with error handling
         string reportPath = Path.Combine(Application.dataPath, "../MissingComponentsReport.txt");
-        File.WriteAllLines(reportPath, reportLines.ToArray());
-
-        // Print summary to Console
-        foreach (var line in reportLines)
+        try
         {
-            Debug.Log(line);
-        }
+            File.WriteAllLines(reportPath, reportLines.ToArray());
+            // Print summary to Console
+            foreach (var line in reportLines)
+            {
+                Debug.Log(line);
+            }
 
-        Debug.Log($"Scan complete. Report saved to: {reportPath}");
+            Debug.Log($"Scan complete. Report saved to: {reportPath}");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Failed to write report to {reportPath}: {ex.Message}\n{ex.StackTrace}");
+            EditorUtility.DisplayDialog("Failed to write report", $"Could not write report to {reportPath}: {ex.Message}", "OK");
+        }
     }
 
     public static void AutoFixMissingEnemyComponents()
     {
         string[] guids = AssetDatabase.FindAssets("t:Prefab");
         int fixedCount = 0;
-        var combatTypes = new System.Type[] {
-            typeof(RPG.Resources.Health),
-            typeof(RPG.Combat.Fighter),
-            typeof(RPG.Stats.BaseStats),
-            typeof(RPG.Resources.Experience),
-            typeof(RPG.Core.ActionScheduler),
-            typeof(RPG.Movement.Mover)
-        };
 
         foreach (string guid in guids)
         {
@@ -142,14 +147,11 @@ public class PrefabAndSceneComponentChecker : EditorWindow
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
             if (prefab == null) continue;
 
-            string lowerPath = path.ToLower();
-            string lowerName = prefab.name.ToLower();
-            bool looksLikeEnemy = lowerPath.Contains("enemy") || lowerName.Contains("enemy") || lowerPath.Contains("npc") || lowerName.Contains("npc");
-            if (!looksLikeEnemy) continue;
+            if (!IsEnemyLike(path, prefab)) continue;
 
             // Determine which combat types are missing anywhere in the prefab
             var missingTypes = new List<System.Type>();
-            foreach (var t in combatTypes)
+            foreach (var t in CombatTypes)
             {
                 var found = false;
                 foreach (Transform child in prefab.GetComponentsInChildren<Transform>(true))
@@ -165,26 +167,44 @@ public class PrefabAndSceneComponentChecker : EditorWindow
 
             if (missingTypes.Count == 0) continue;
 
-            // Load prefab contents, add missing components to root, save
-            GameObject root = PrefabUtility.LoadPrefabContents(path);
+            GameObject root = null;
             bool changed = false;
-            foreach (var t in missingTypes)
+            try
             {
-                if (root.GetComponent(t) == null)
+                root = PrefabUtility.LoadPrefabContents(path);
+
+                // Add each missing type to the root (no redundant check)
+                foreach (var t in missingTypes)
                 {
                     root.AddComponent(t);
                     Debug.Log($"Added component {t.Name} to prefab {path}");
                     changed = true;
                 }
-            }
 
-            if (changed)
+                if (changed)
+                {
+                    var saved = PrefabUtility.SaveAsPrefabAsset(root, path);
+                    if (saved == null)
+                    {
+                        Debug.LogError($"Failed to save prefab at {path} after modification.");
+                    }
+                    else
+                    {
+                        fixedCount++;
+                    }
+                }
+            }
+            catch (Exception ex)
             {
-                PrefabUtility.SaveAsPrefabAsset(root, path);
-                fixedCount++;
+                Debug.LogError($"Error while auto-fixing prefab {path}: {ex.Message}\n{ex.StackTrace}");
             }
-
-            PrefabUtility.UnloadPrefabContents(root);
+            finally
+            {
+                if (root != null)
+                {
+                    PrefabUtility.UnloadPrefabContents(root);
+                }
+            }
         }
 
         Debug.Log($"Auto-fix complete. Modified {fixedCount} prefabs.");
