@@ -2,9 +2,6 @@ Prefab & Scene Component Scan Report
 =================================
 Found 118 prefabs to scan.
 Missing script on prefab 'Assets/Game/Characters/Character.prefab' at transform 'Character'
-Prefab: Assets/Game/Characters/Enemies/Enemy (kopi).prefab looks like an enemy but is missing components: Fighter, BaseStats, Experience, ActionScheduler, Mover
-Prefab: Assets/Game/Characters/Enemies/Enemy.prefab looks like an enemy but is missing components: Experience
-Prefab: Assets/Game/Characters/Enemies/ToughEnemy.prefab looks like an enemy but is missing components: Experience
 Missing script on prefab 'Assets/Game/Characters/Player/Player.prefab' at transform 'Player'
 Missing script on prefab 'Assets/Game/Core/Core.prefab' at transform 'Core/Player'
 Missing scripts (count): 3
