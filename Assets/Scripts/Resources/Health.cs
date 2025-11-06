@@ -21,7 +21,7 @@ namespace RPG.Resources
             return isDead;
         }
 
-        public void TakeDamage(float damage)
+        public void TakeDamage(GameObject instigator, float damage)
         {
             health = Mathf.Max(health - damage, 0);
             if (health <= 0)
