@@ -56,6 +56,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "RPG_project.slnx",
+    "dotnet.defaultSolution": "Medieval-Adventure.slnx",
     "git.ignoreLimitWarning": true
 }
