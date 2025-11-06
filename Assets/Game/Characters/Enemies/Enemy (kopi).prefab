@@ -13,9 +13,14 @@ GameObject:
   - component: {fileID: 4694020566906739102}
   - component: {fileID: 4477556813705167486}
   - component: {fileID: 268024761649826013}
-  - component: {fileID: 9142581695981265949}
+  - component: {fileID: 6345703652591012490}
+  - component: {fileID: 2783838976714367244}
+  - component: {fileID: 9154460192167453683}
+  - component: {fileID: 8033263274014540928}
+  - component: {fileID: 2022412744473276967}
+  - component: {fileID: 4023377230229871160}
   m_Layer: 0
-  m_Name: Enemy
+  m_Name: Enemy (kopi)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -64,6 +69,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -85,6 +92,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -124,7 +132,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce5f16bd37b9b1bec9c2be557fe0d2fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &9142581695981265949
+--- !u!114 &6345703652591012490
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -133,7 +141,78 @@ MonoBehaviour:
   m_GameObject: {fileID: 2849491025305755961}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40e0a1655b87f5022ae6a588d4914a80, type: 3}
+  m_Script: {fileID: 11500000, guid: 022111f163e04adccb016576e0f61b7c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Resources.Health
   health: 100
+  DelayBeforeDestroy: 5
+--- !u!114 &2783838976714367244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2849491025305755961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51164d683cc93e46d83e11871c485172, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Combat.Fighter
+  timeBetweenAttacks: 1
+  rightHandTransform: {fileID: 0}
+  leftHandTransform: {fileID: 0}
+  defaultWeapon: {fileID: 0}
+--- !u!114 &9154460192167453683
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2849491025305755961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 548d5362495f329a39de9d6a4d8d1138, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Stats.BaseStats
+  startingLevel: 1
+  characterClass: 0
+  progression: {fileID: 0}
+--- !u!114 &8033263274014540928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2849491025305755961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afb8e9a82b7f01de4b654f37efb2b6e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Resources.Experience
+  experiencePoints: 0
+--- !u!114 &2022412744473276967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2849491025305755961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08dc9953a665fb068bb5e7e730522b64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Core.ActionScheduler
+--- !u!114 &4023377230229871160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2849491025305755961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15d9a24a1a896f101a0c44aed4af079c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Movement.Mover
+  target: {fileID: 0}
+  maxSpeed: 6

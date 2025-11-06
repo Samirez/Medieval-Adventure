@@ -10,8 +10,12 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -4267010444644108162, guid: ac076f224aa5695c0ac04dcd17089acd, type: 3}
       propertyPath: uniqueIdentifier
-      value: 84316985-85eb-4b39-a5b1-3f14ca419066
+      value: 230e347e-7df2-468d-a944-4897036ce18c
       objectReference: {fileID: 0}
+    - target: {fileID: 976068238247679769, guid: ac076f224aa5695c0ac04dcd17089acd, type: 3}
+      propertyPath: progression
+      value: 
+      objectReference: {fileID: 11400000, guid: 2c5926307405e3478a16ff36d4040771, type: 2}
     - target: {fileID: 1993566656660088814, guid: ac076f224aa5695c0ac04dcd17089acd, type: 3}
       propertyPath: m_Speed
       value: 3
@@ -88,7 +92,8 @@ PrefabInstance:
       propertyPath: rightHandTransform
       value: 
       objectReference: {fileID: 4337215514969692198}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5832817705568135268, guid: ac076f224aa5695c0ac04dcd17089acd, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -104,6 +109,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5906062140671090785, guid: ac076f224aa5695c0ac04dcd17089acd, type: 3}
       insertIndex: -1
       addedObject: {fileID: -8583171718462861936}
+    - targetCorrespondingSourceObject: {fileID: 5906062140671090785, guid: ac076f224aa5695c0ac04dcd17089acd, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 944140659128365664}
   m_SourcePrefab: {fileID: 100100000, guid: ac076f224aa5695c0ac04dcd17089acd, type: 3}
 --- !u!1 &779428085134948294 stripped
 GameObject:
@@ -178,6 +186,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RPG.Stats.BaseStats
   startingLevel: 1
   characterClass: 1
+  progression: {fileID: 0}
+--- !u!114 &944140659128365664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 779428085134948294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afb8e9a82b7f01de4b654f37efb2b6e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Resources.Experience
+  experiencePoints: 0
 --- !u!4 &4337215514969692198 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7428541380742336385, guid: ac076f224aa5695c0ac04dcd17089acd, type: 3}

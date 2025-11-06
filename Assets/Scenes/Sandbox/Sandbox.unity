@@ -1630,7 +1630,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 852813394812895171, guid: d035140293cee4cf6ba12ca147e18daf, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -2398,6 +2399,10 @@ PrefabInstance:
       propertyPath: progression
       value: 
       objectReference: {fileID: 11400000, guid: 2c5926307405e3478a16ff36d4040771, type: 2}
+    - target: {fileID: 931753707680843200, guid: 164fed4d1c5a356bc8827eac67863018, type: 3}
+      propertyPath: characterClass
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 4315963452823090732, guid: 164fed4d1c5a356bc8827eac67863018, type: 3}
       propertyPath: m_LocalPosition.x
       value: 27.048628
@@ -2438,6 +2443,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5020802685409438375, guid: 164fed4d1c5a356bc8827eac67863018, type: 3}
+      propertyPath: uniqueIdentifier
+      value: dd62dd7f-0fcf-4dd0-9fe4-bf6860a3caf7
+      objectReference: {fileID: 0}
     - target: {fileID: 5806122689687351992, guid: 164fed4d1c5a356bc8827eac67863018, type: 3}
       propertyPath: m_Name
       value: Archer
@@ -2450,7 +2459,8 @@ PrefabInstance:
       propertyPath: m_IsTrigger
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5879349429349939901, guid: 164fed4d1c5a356bc8827eac67863018, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -8907,7 +8917,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 852813394812895171, guid: d035140293cee4cf6ba12ca147e18daf, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -9236,6 +9247,10 @@ PrefabInstance:
       propertyPath: progression
       value: 
       objectReference: {fileID: 11400000, guid: 2c5926307405e3478a16ff36d4040771, type: 2}
+    - target: {fileID: 8504578437345162039, guid: 6ad76ed5cdfc6f3a89cc0eb986c77df0, type: 3}
+      propertyPath: startingLevel
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -10903,7 +10918,8 @@ PrefabInstance:
       propertyPath: rightHandTransform
       value: 
       objectReference: {fileID: 1693518447}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4942393378019752083, guid: 43cebe9cfa5ba99e79548070f4709fd1, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -11169,6 +11185,10 @@ PrefabInstance:
       propertyPath: progression
       value: 
       objectReference: {fileID: 11400000, guid: 2c5926307405e3478a16ff36d4040771, type: 2}
+    - target: {fileID: 6245412323787292862, guid: d035140293cee4cf6ba12ca147e18daf, type: 3}
+      propertyPath: characterClass
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6783580846944196064, guid: d035140293cee4cf6ba12ca147e18daf, type: 3}
       propertyPath: patrolPath
       value: 
