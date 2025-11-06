@@ -16,7 +16,7 @@ namespace RPG.Stats
             {
                 if (progressionClass.CharacterClass == characterclass)
                 {
-                    return progressionClass.Health[level - 1];
+                    return progressionClass.stats.Health[level - 1];
                 }
             }
             return 0;

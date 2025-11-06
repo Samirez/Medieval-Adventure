@@ -48,7 +48,7 @@ namespace RPG.Resources
         
         private void GrantExperience(GameObject instigator)
         {
-            Experience experience = instigator.GetComponent<experience>();
+            Experience experience = instigator.GetComponent<Experience>();
             if (experience == null) return;
 
             experience.GainExperience(GetComponent<BaseStats>().GetExperienceReward());
