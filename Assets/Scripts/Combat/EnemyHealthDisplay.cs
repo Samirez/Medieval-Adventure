@@ -20,6 +20,7 @@ namespace RPG.Combat
             if (fighter.GetTarget() == null)
             {
                 GetComponent<TextMeshProUGUI>().text = "N/A";
+                return;
             }
             Health health = fighter.GetTarget();
             GetComponent<TextMeshProUGUI>().text = String.Format("{0:0}%",health.GetPercentage());

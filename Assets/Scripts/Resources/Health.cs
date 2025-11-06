@@ -27,6 +27,7 @@ namespace RPG.Resources
             if (health <= 0)
             {
                 Die();
+                GrantExperience(instigator);
             }
         }
 
@@ -37,12 +38,20 @@ namespace RPG.Resources
         }
 
         private void Die()
-        {   
+        {
             if (isDead) return;
 
             isDead = true;
             GetComponent<Animator>().SetTrigger("die");
             GetComponent<ActionScheduler>().CancelCurrentAction();
+        }
+        
+        private void GrantExperience(GameObject instigator)
+        {
+            Experience experience = instigator.GetComponent<experience>();
+            if (experience == null) return;
+
+            experience.GainExperience(GetComponent<BaseStats>().GetExperienceReward());
         }
 
         public object CaptureState()
