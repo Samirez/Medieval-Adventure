@@ -26,15 +26,10 @@ namespace RPG.Resources
             health = Mathf.Max(health - damage, 0);
             if (health <= 0)
             {
-                DestroyEnemy();
+                Die();
             }
         }
 
-        private void DestroyEnemy()
-        {
-                Die();
-                //Destroy(this.gameObject, DelayBeforeDestroy);
-        }
 
         public float GetPercentage()
         {
