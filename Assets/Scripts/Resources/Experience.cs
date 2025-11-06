@@ -8,8 +8,16 @@ namespace RPG.Resources
 
         public void GainExperience(float experience)
         {
+            if (experience < 0)
++           {
++               Debug.LogWarning("Cannot gain negative experience");
++               return;
++           }
             experiencePoints += experience;
         }
+
+        public float ExperiencePoints => experiencePoints;
+
     }
 }
 
