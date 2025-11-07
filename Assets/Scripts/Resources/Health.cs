@@ -13,7 +13,7 @@ namespace RPG.Resources
 
         private void Start()
         {
-            health = GetComponent<BaseStats>().GetHealth();   
+            health = GetComponent<BaseStats>().GetStat(Stat.Health);   
         }
 
         public bool IsDead()
@@ -34,7 +34,7 @@ namespace RPG.Resources
 
         public float GetPercentage()
         {
-            return 100 * (health / GetComponent<BaseStats>().GetHealth());
+            return 100 * (health / GetComponent<BaseStats>().GetStat(Stat.Health));
         }
 
         private void Die()
@@ -51,14 +51,7 @@ namespace RPG.Resources
             Experience experience = instigator.GetComponent<Experience>();
             if (experience == null) return;
 
-            BaseStats baseStats = GetComponent<BaseStats>();
-            if (baseStats == null)
-            {
-                Debug.LogWarning($"BaseStats component missing on {gameObject.name}; cannot grant experience.");
-                return;
-            }
-
-            experience.GainExperience(baseStats.GetExperienceReward());
+            experience.GainExperience(Stat.ExperienceReward);
         }
 
         public object CaptureState()

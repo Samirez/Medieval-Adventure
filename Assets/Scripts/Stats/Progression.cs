@@ -10,43 +10,19 @@ namespace RPG.Stats
     {
         [SerializeField] ProgressionCharacterClass[] characterClasses = null;
 
-        public float GetHealth(CharacterClass characterclass, int level)
+        public float GetStat(Stat stat, CharacterClass characterclass, int level)
         {
             foreach (ProgressionCharacterClass progressionClass in characterClasses)
             {
-                if (progressionClass.CharacterClass == characterclass)
+                if (progressionClass.CharacterClass != characterclass) continue;
+                
+                foreach (ProgressionStat progressionStat in progressionClass.stats)
                 {
-                    if (progressionClass.stats == null || progressionClass.stats.Length == 0)
-                    {
-                        Debug.LogWarning($"No stats defined for character class {characterclass} in Progression.");
-                        return 0f;
-                    }
+                    if (progressionStat.stat != stat) continue;
 
-                    // Find the ProgressionStat entry for Health
-                    ProgressionStat healthStat = null;
-                    foreach (ProgressionStat ps in progressionClass.stats)
-                    {
-                        if (ps == null) continue;
-                        if (ps.stat == Stat.Health)
-                        {
-                            healthStat = ps;
-                            break;
-                        }
-                    }
+                    if (progressionStat.levels.Length < level) continue;
 
-                    if (healthStat == null)
-                    {
-                        Debug.LogWarning($"Health stat not found for character class {characterclass} in Progression.");
-                        return 0f;
-                    }
-
-                    if (healthStat.levels == null || healthStat.levels.Length < level || level <= 0)
-                    {
-                        Debug.LogWarning($"Requested level {level} is out of bounds for Health levels on character class {characterclass} in Progression.");
-                        return 0f;
-                    }
-
-                    return healthStat.levels[level - 1];
+                    return progressionStat.levels[level - 1];
                 }
             }
             return 0;
