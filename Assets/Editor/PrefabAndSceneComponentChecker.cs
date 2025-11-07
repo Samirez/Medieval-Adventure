@@ -203,9 +203,11 @@ public class PrefabAndSceneComponentChecker : EditorWindow
                             attachTo = root;
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        // If prefab utilities fail for any reason, be conservative and use root
+                        // If prefab utilities fail for any reason, log the exception for diagnostics
+                        Debug.LogException(ex);
+                        // be conservative and use root
                         attachTo = root;
                     }
 
