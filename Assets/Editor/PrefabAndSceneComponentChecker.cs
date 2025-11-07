@@ -24,6 +24,8 @@ public class PrefabAndSceneComponentChecker : EditorWindow
     private static readonly string[] EnemyNameExclusions = new string[] {
         "spawner", "health", "manager", "dialog", "ui", "bar", "pickup", "controller", "creator", "display", "hud"
     };
+    // compiled whole-word regex for enemy or npc to avoid recompiling on each call
+    private static readonly Regex EnemyWordRegex = new Regex(@"\b(enemy|npc)\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
     [MenuItem("Tools/Scan Prefabs for Missing Components and Health")]
     public static void ShowWindow()
     {
@@ -228,7 +230,7 @@ public class PrefabAndSceneComponentChecker : EditorWindow
         if (string.IsNullOrEmpty(name)) return false;
 
         // Whole-word regex for enemy or npc
-        if (!Regex.IsMatch(name, @"\b(enemy|npc)\b", RegexOptions.IgnoreCase))
+        if (!EnemyWordRegex.IsMatch(name))
         {
             return false;
         }
@@ -264,7 +266,10 @@ public class PrefabAndSceneComponentChecker : EditorWindow
             {
                 if (!string.IsNullOrEmpty(prefab.tag) && prefab.CompareTag("Enemy")) return true;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"Prefab tag check failed for {prefab?.name}: {ex.Message}", prefab);
+            }
         }
 
         return false;
