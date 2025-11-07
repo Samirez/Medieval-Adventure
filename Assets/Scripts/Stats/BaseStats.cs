@@ -13,6 +13,12 @@ namespace RPG.Stats
 
         public float GetStat(Stat stat)
         {
+            if (progression == null)
+            {
+                Debug.LogError($"Progression is not assigned on {gameObject.name}. Cannot get stat {stat}.");
+                return 0f;
+            }
+
             return progression.GetStat(stat, characterClass, startingLevel);
         }
 

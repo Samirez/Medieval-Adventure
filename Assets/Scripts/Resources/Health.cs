@@ -51,7 +51,16 @@ namespace RPG.Resources
             Experience experience = instigator.GetComponent<Experience>();
             if (experience == null) return;
 
-            experience.GainExperience(Stat.ExperienceReward);
+            // Get this object's BaseStats and fetch the numeric experience reward
+            BaseStats baseStats = GetComponent<BaseStats>();
+            if (baseStats == null)
+            {
+                Debug.LogWarning($"BaseStats component missing on {gameObject.name}; cannot grant experience.");
+                return;
+            }
+
+            float xpReward = baseStats.GetStat(Stat.ExperienceReward);
+            experience.GainExperience(xpReward);
         }
 
         public object CaptureState()
