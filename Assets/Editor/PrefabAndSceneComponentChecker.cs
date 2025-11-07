@@ -151,6 +151,14 @@ public class PrefabAndSceneComponentChecker : EditorWindow
 
             if (!IsEnemyLike(path, prefab)) continue;
 
+            // Skip model (read-only) prefabs up front
+            var assetType = PrefabUtility.GetPrefabAssetType(prefab);
+            if (assetType == PrefabAssetType.Model)
+            {
+                Debug.Log($"Skipping model prefab (read-only): {path}");
+                continue;
+            }
+
             // Determine which combat types are missing anywhere in the prefab
             var missingTypes = new List<System.Type>();
             foreach (var t in CombatTypes)
@@ -184,11 +192,34 @@ public class PrefabAndSceneComponentChecker : EditorWindow
                     // Try to find a preferred child to attach logic components to
                     Transform targetTransform = root.transform.Find("Logic");
                     if (targetTransform == null) targetTransform = root.transform.Find("Body");
+
                     GameObject attachTo = targetTransform != null ? targetTransform.gameObject : root;
 
-                    attachTo.AddComponent(t);
-                    Debug.Log($"Added component {t.Name} to {(attachTo == root ? "root" : attachTo.name)} of prefab {path}");
-                    changed = true;
+                    // Ensure attachTo is not part of a nested prefab instance; if it is, fall back to root
+                    try
+                    {
+                        if (PrefabUtility.IsAnyPrefabInstanceRoot(attachTo) || PrefabUtility.IsPartOfPrefabInstance(attachTo))
+                        {
+                            attachTo = root;
+                        }
+                    }
+                    catch
+                    {
+                        // If prefab utilities fail for any reason, be conservative and use root
+                        attachTo = root;
+                    }
+
+                    try
+                    {
+                        attachTo.AddComponent(t);
+                        Debug.Log($"Added component {t.Name} to {(attachTo == root ? "root" : attachTo.name)} of prefab {path}");
+                        changed = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError($"Failed to add component {t.Name} to {(attachTo == root ? "root" : attachTo.name)} in prefab {path}: {ex.Message}\n{ex.StackTrace}");
+                        // continue with next component
+                    }
                 }
 
                 if (changed)
