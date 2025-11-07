@@ -175,11 +175,19 @@ public class PrefabAndSceneComponentChecker : EditorWindow
             {
                 root = PrefabUtility.LoadPrefabContents(path);
 
-                // Add each missing type to the root (no redundant check)
+                // NOTE: We add missing components to the prefab root by default.
+                // In many projects components are expected on specific child objects; this auto-fix
+                // attempts to find a sensible child ('Logic' or 'Body') and add components there first,
+                // falling back to the root if none are found.
                 foreach (var t in missingTypes)
                 {
-                    root.AddComponent(t);
-                    Debug.Log($"Added component {t.Name} to prefab {path}");
+                    // Try to find a preferred child to attach logic components to
+                    Transform targetTransform = root.transform.Find("Logic");
+                    if (targetTransform == null) targetTransform = root.transform.Find("Body");
+                    GameObject attachTo = targetTransform != null ? targetTransform.gameObject : root;
+
+                    attachTo.AddComponent(t);
+                    Debug.Log($"Added component {t.Name} to {(attachTo == root ? "root" : attachTo.name)} of prefab {path}");
                     changed = true;
                 }
 
@@ -193,6 +201,8 @@ public class PrefabAndSceneComponentChecker : EditorWindow
                     else
                     {
                         fixedCount++;
+                        // Advise manual review because adding components to root/children may be incorrect for some prefabs
+                        Debug.LogWarning($"Auto-fix added components to prefab {path}. Please verify the prefab hierarchy and component placement manually.");
                     }
                 }
             }
