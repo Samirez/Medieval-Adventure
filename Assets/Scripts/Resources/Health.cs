@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using RPG.Saving;
 using RPG.Stats;
@@ -13,7 +14,21 @@ namespace RPG.Resources
 
         private void Start()
         {
-            health = GetComponent<BaseStats>().GetStat(Stat.Health);   
+            BaseStats baseStats = GetComponent<BaseStats>();
+            if (baseStats == null)
+            {
+                Debug.LogError($"BaseStats component missing on {gameObject.name} during Start. Health cannot be initialized.");
+                return;
+            }
+
+            try
+            {
+                health = baseStats.GetStat(Stat.Health);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Debug.LogError($"Failed to initialize health for {gameObject.name}: {ex.Message}");
+            }
         }
 
         public bool IsDead()
@@ -34,7 +49,24 @@ namespace RPG.Resources
 
         public float GetPercentage()
         {
-            return 100 * (health / GetComponent<BaseStats>().GetStat(Stat.Health));
+            BaseStats baseStats = GetComponent<BaseStats>();
+            if (baseStats == null)
+            {
+                Debug.LogError($"BaseStats component missing on {gameObject.name} when calculating health percentage.");
+                return 0f;
+            }
+
+            try
+            {
+                float maxHealth = baseStats.GetStat(Stat.Health);
+                if (Mathf.Approximately(maxHealth, 0f)) return 0f;
+                return 100 * (health / maxHealth);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Debug.LogError($"Failed to calculate health percentage for {gameObject.name}: {ex.Message}");
+                return 0f;
+            }
         }
 
         private void Die()
@@ -59,8 +91,15 @@ namespace RPG.Resources
                 return;
             }
 
-            float xpReward = baseStats.GetStat(Stat.ExperienceReward);
-            experience.GainExperience(xpReward);
+            try
+            {
+                float xpReward = baseStats.GetStat(Stat.ExperienceReward);
+                experience.GainExperience(xpReward);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Debug.LogError($"Failed to grant experience for {gameObject.name}: {ex.Message}");
+            }
         }
 
         public object CaptureState()

@@ -15,8 +15,7 @@ namespace RPG.Stats
         {
             if (progression == null)
             {
-                Debug.LogError($"Progression is not assigned on {gameObject.name}. Cannot get stat {stat}.");
-                return 0f;
+                throw new InvalidOperationException($"Progression is not assigned on '{gameObject.name}'. Cannot get stat '{stat}'.");
             }
 
             return progression.GetStat(stat, characterClass, startingLevel);
