@@ -22,6 +22,24 @@ namespace RPG.Stats
             return progression.GetStat(stat, characterClass, startingLevel);
         }
 
+        public int GetLevel()
+        {
+            Experience experience = GetComponent<Experience>();
+            if (experience == null) return startingLevel;
+
+            float currentXP = experience.GetPoints();
+            int MaxLevel = progression.GetLevels(Stat.ExperienceToLevelUp, characterClass);
+
+            for (int levels = 1; levels <= MaxLevel; levels++)
+            {
+                float XPToLevelUp = progression.GetStat(Stat.ExperienceToLevelUp, characterClass, levels);
+                if (currentXP < XPToLevelUp)
+                {
+                    return levels;
+                }
+            }
+        }
+
     }
 }
 
