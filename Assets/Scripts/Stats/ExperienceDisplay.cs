@@ -1,21 +1,22 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using RPG.Resources;
 
 namespace RPG.Stats
 {
     public class ExperienceDisplay : MonoBehaviour
     {
         Experience experience;
-        private Text experienceText;
+        private TextMeshProUGUI experienceText;
 
         private void Awake()
         {
             // Cache the UI Text component once
-            experienceText = GetComponent<Text>();
+            experienceText = GetComponent<TextMeshProUGUI>();
             if (experienceText == null)
             {
-                Debug.LogError("ExperienceDisplay requires a Text component on the same GameObject.");
+                Debug.LogError("ExperienceDisplay requires a TextMeshProUGUI component on the same GameObject.");
                 enabled = false;
                 return;
             }
@@ -40,7 +41,7 @@ namespace RPG.Stats
         private void Update()
         {
             // We already validated in Awake; just update the cached Text
-            experienceText.text = String.Format("{0:0}", experience.ExperiencePoints);
+            experienceText.text = String.Format("{0:0}", experience.GetPoints());
         }
     }
 }
