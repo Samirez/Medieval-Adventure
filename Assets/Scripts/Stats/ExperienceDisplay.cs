@@ -1,7 +1,6 @@
 using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using RPG.Resources;
 
 namespace RPG.Stats
@@ -41,7 +40,6 @@ namespace RPG.Stats
 
         private void Update()
         {
-            // We already validated in Awake; just update the cached Text
             experienceText.text = String.Format("{0:0}", experience.GetPoints());
         }
     }

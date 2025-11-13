@@ -9,7 +9,6 @@ namespace RPG.Resources
     public class Health : MonoBehaviour, ISaveable
     {
         [SerializeField] float health = 100f;
-        [SerializeField] float DelayBeforeDestroy = 5f;
         bool isDead = false;
 
         private void Start()
