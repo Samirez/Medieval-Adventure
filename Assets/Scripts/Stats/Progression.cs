@@ -15,9 +15,19 @@ namespace RPG.Stats
         {
             BuildLookup();
 
-            float[] levels = lookupTable[characterclass][stat];
+            // Defensive: ensure we have data for the requested character class and stat
+            if (lookupTable == null) return 0f;
+            if (!lookupTable.ContainsKey(characterclass)) return 0f;
 
-            if (levels.Length < level) return 0;
+            var statLookup = lookupTable[characterclass];
+            if (statLookup == null || !statLookup.ContainsKey(stat)) return 0f;
+
+            var levels = statLookup[stat];
+            if (levels == null || levels.Length == 0) return 0f;
+
+            // level is expected to be 1-based. Validate the requested level.
+            if (level <= 0) return 0f;
+            if (levels.Length < level) return 0f;
 
             return levels[level - 1];
         }
@@ -27,6 +37,8 @@ namespace RPG.Stats
             if (lookupTable != null) return;
 
             lookupTable = new Dictionary<CharacterClass, Dictionary<Stat, float[]>>();
+
+            if (characterClasses == null) return;
 
             foreach (ProgressionCharacterClass progressionClass in characterClasses)
             {
