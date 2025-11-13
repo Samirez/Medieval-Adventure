@@ -84,7 +84,27 @@ namespace RPG.Stats
         {
             BuildLookup();
 
-            float[] levels = lookupTable[characterClass][stat];
+            if (lookupTable == null)
+            {
+                Debug.LogWarning($"Progression lookup table is not built or is empty. Cannot get levels for CharacterClass={characterClass}, Stat={stat}.", this);
+                return 0;
+            }
+
+            if (!lookupTable.ContainsKey(characterClass))
+            {
+                Debug.LogWarning($"Progression has no entry for CharacterClass={characterClass}. Cannot get levels for Stat={stat}.", this);
+                return 0;
+            }
+
+            var statLookup = lookupTable[characterClass];
+            if (!statLookup.ContainsKey(stat))
+            {
+                Debug.LogWarning($"Progression for CharacterClass={characterClass} has no stat entry for Stat={stat}.", this);
+                return 0;
+            }
+
+            var levels = statLookup[stat];
+            if (levels == null) return 0;
             return levels.Length;
         }
 

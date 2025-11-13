@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using RPG.Resources;
 
 namespace RPG.Stats
 {
@@ -28,6 +29,11 @@ namespace RPG.Stats
             if (experience == null) return startingLevel;
 
             float currentXP = experience.GetPoints();
+            if (progression == null)
+            {
+                throw new InvalidOperationException($"Progression is not assigned on '{gameObject.name}'. Cannot determine level for CharacterClass={characterClass}.");
+            }
+
             int MaxLevel = progression.GetLevels(Stat.ExperienceToLevelUp, characterClass);
 
             for (int levels = 1; levels <= MaxLevel; levels++)
@@ -38,6 +44,9 @@ namespace RPG.Stats
                     return levels;
                 }
             }
+
+            // If we've reached or exceeded all thresholds, return the maximum defined level.
+            return MaxLevel;
         }
 
     }

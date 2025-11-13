@@ -7,21 +7,40 @@ namespace RPG.Stats
     public class ExperienceDisplay : MonoBehaviour
     {
         Experience experience;
+        private Text experienceText;
 
         private void Awake()
         {
-           experience = GameObject.FindWithTag("Player").GetComponent<Experience>();
+            // Cache the UI Text component once
+            experienceText = GetComponent<Text>();
+            if (experienceText == null)
+            {
+                Debug.LogError("ExperienceDisplay requires a Text component on the same GameObject.");
+                enabled = false;
+                return;
+            }
+
+            // Safely find the player and its Experience component
+            var playerGO = GameObject.FindWithTag("Player");
+            if (playerGO == null)
+            {
+                Debug.LogError("No GameObject found with tag 'Player'. ExperienceDisplay will be disabled.");
+                enabled = false;
+                return;
+            }
+
+            if (!playerGO.TryGetComponent<Experience>(out experience))
+            {
+                Debug.LogError("Player GameObject does not have an Experience component. ExperienceDisplay will be disabled.");
+                enabled = false;
+                return;
+            }
         }
 
         private void Update()
         {
-            if (experience == null)
-            {
-                Debug.LogError("Player GameObject does not have an Experience component.");
-                return;
-            }
-
-            GetComponent<Text>().text = String.Format("{0:0}", experience.ExperiencePoints);
+            // We already validated in Awake; just update the cached Text
+            experienceText.text = String.Format("{0:0}", experience.ExperiencePoints);
         }
     }
 }
