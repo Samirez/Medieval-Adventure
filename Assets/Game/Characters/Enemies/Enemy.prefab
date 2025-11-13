@@ -16,6 +16,10 @@ PrefabInstance:
       propertyPath: progression
       value: 
       objectReference: {fileID: 11400000, guid: 2c5926307405e3478a16ff36d4040771, type: 2}
+    - target: {fileID: 976068238247679769, guid: ac076f224aa5695c0ac04dcd17089acd, type: 3}
+      propertyPath: characterClass
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 1993566656660088814, guid: ac076f224aa5695c0ac04dcd17089acd, type: 3}
       propertyPath: m_Speed
       value: 3
@@ -66,6 +70,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5906062140671090785, guid: ac076f224aa5695c0ac04dcd17089acd, type: 3}
       propertyPath: m_Name
+      value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 5906062140671090785, guid: ac076f224aa5695c0ac04dcd17089acd, type: 3}
+      propertyPath: m_TagString
       value: Enemy
       objectReference: {fileID: 0}
     - target: {fileID: 7174575037802453045, guid: ac076f224aa5695c0ac04dcd17089acd, type: 3}
@@ -181,7 +189,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afb8e9a82b7f01de4b654f37efb2b6e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RPG.Resources.Experience
-  experiencePoints: 0
+  experiencePoints: 10
 --- !u!4 &4337215514969692198 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7428541380742336385, guid: ac076f224aa5695c0ac04dcd17089acd, type: 3}
