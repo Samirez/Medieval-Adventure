@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 5320644480816316161}
   - component: {fileID: 5705731390031572738}
   - component: {fileID: 7565127869423090714}
-  - component: {fileID: 2568315351090082704}
   - component: {fileID: 888250943055612584}
   - component: {fileID: 174336612826535486}
   - component: {fileID: 4007818166272811914}
@@ -22,6 +21,7 @@ GameObject:
   - component: {fileID: 3795153128878593055}
   - component: {fileID: -1394828850531008328}
   - component: {fileID: -6280722392354010433}
+  - component: {fileID: 3037767595320457209}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -116,20 +116,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &2568315351090082704
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2495176443303181205}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40e0a1655b87f5022ae6a588d4914a80, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  health: 200
-  DelayBeforeDestroy: 5
 --- !u!114 &888250943055612584
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,7 +163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ea9374b509b70f4bba37e4a2ca8cf00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uniqueIdentifier: 21f7b23c-e43c-4351-a65a-e7c7868b017c
+  uniqueIdentifier: 604930c7-4773-45d1-9e5f-94124e159060
 --- !u!114 &1038900316715996473
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -203,9 +189,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeBetweenAttacks: 1
-  rightHandTransform: {fileID: 0}
-  leftHandTransform: {fileID: 0}
-  defaultWeapon: {fileID: 0}
+  rightHandTransform: {fileID: 6848995070556430148}
+  leftHandTransform: {fileID: 6848995070556503878}
+  defaultWeapon: {fileID: 11400000, guid: d981c1013058d55b4af9ac412cca3924, type: 2}
 --- !u!114 &8684166583406411751
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -268,6 +254,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RPG.Stats.BaseStats
   startingLevel: 1
   characterClass: 0
+  progression: {fileID: 0}
 --- !u!54 &-6280722392354010433
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -295,6 +282,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &3037767595320457209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2495176443303181205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 022111f163e04adccb016576e0f61b7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Resources.Health
+  health: 100
 --- !u!1 &4044988539985573130
 GameObject:
   m_ObjectHideFlags: 0

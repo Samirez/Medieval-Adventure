@@ -11,13 +11,13 @@ GameObject:
   - component: {fileID: 4215527649078256885}
   - component: {fileID: 4357511369733960950}
   - component: {fileID: 1993566656660088814}
-  - component: {fileID: 5832817705568135268}
   - component: {fileID: 9152891684515418460}
   - component: {fileID: 8159809771647110602}
   - component: {fileID: -4267010444644108162}
   - component: {fileID: -199069133265793331}
   - component: {fileID: 7174575037802453045}
   - component: {fileID: 976068238247679769}
+  - component: {fileID: 1673243211337630863}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -111,20 +111,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &5832817705568135268
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5906062140671090785}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40e0a1655b87f5022ae6a588d4914a80, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  health: 100
-  DelayBeforeDestroy: 5
 --- !u!114 &9152891684515418460
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -172,7 +158,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ea9374b509b70f4bba37e4a2ca8cf00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uniqueIdentifier: 
+  uniqueIdentifier: 546fc6c0-1aa8-4a0c-8b47-812a62a23af1
 --- !u!114 &-199069133265793331
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -215,6 +201,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RPG.Stats.BaseStats
   startingLevel: 1
   characterClass: 1
+  progression: {fileID: 0}
+--- !u!114 &1673243211337630863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5906062140671090785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 022111f163e04adccb016576e0f61b7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RPG.Resources.Health
+  health: 100
 --- !u!1001 &7428541380741875205
 PrefabInstance:
   m_ObjectHideFlags: 0
