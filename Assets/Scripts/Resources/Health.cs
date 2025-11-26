@@ -8,25 +8,28 @@ namespace RPG.Resources
 {
     public class Health : MonoBehaviour, ISaveable
     {
-        [SerializeField] float health = 100f;
+        float health = -1f;
         bool isDead = false;
 
         private void Start()
         {
-            BaseStats baseStats = GetComponent<BaseStats>();
-            if (baseStats == null)
+            if (health < 0)
             {
-                Debug.LogError($"BaseStats component missing on {gameObject.name} during Start. Health cannot be initialized.");
-                return;
-            }
+                BaseStats baseStats = GetComponent<BaseStats>();
+                if (baseStats == null)
+                {
+                    Debug.LogError($"BaseStats component missing on {gameObject.name} during Start. Health cannot be initialized.");
+                    return;
+                }
 
-            try
-            {
-                health = baseStats.GetStat(Stat.Health);
-            }
-            catch (InvalidOperationException ex)
-            {
-                Debug.LogError($"Failed to initialize health for {gameObject.name}: {ex.Message}");
+                try
+                {
+                    health = baseStats.GetStat(Stat.Health);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Debug.LogError($"Failed to initialize health for {gameObject.name}: {ex.Message}");
+                }
             }
         }
 

@@ -7,7 +7,7 @@ namespace RPG.Stats
 {
     public class ExperienceDisplay : MonoBehaviour
     {
-        Experience experience;
+        private Experience experience;
         private TextMeshProUGUI experienceText;
 
         private void Awake()
@@ -40,7 +40,7 @@ namespace RPG.Stats
 
         private void Update()
         {
-            experienceText.text = String.Format("{0:0}", experience.GetPoints());
+            experienceText.text = experience.GetPoints().ToString("0");
         }
     }
 }
