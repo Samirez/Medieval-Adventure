@@ -13,14 +13,27 @@ namespace RPG.Stats
         [SerializeField] CharacterClass characterClass;
         [SerializeField] Progression progression = null;
 
-        int currentLevel = 0;
+        // Ensure currentLevel is never zero to avoid level-0 edge cases when other scripts query early.
+        int currentLevel = 1;
+        Experience experience;
+
+        private void Awake()
+        {
+            // Assign from serialized startingLevel (set by inspector) so Awake-time queries see the correct base level.
+            currentLevel = startingLevel;
+        }
 
         private void Start()
         {
             currentLevel = CalculateLevel();
+            experience = GetComponent<Experience>();
+            if (experience != null)
+            {
+                experience.onExperienceGained += UpdateLevel;
+            }
         }
 
-        private void Update()
+        private void UpdateLevel()
         {
             int newLevel = CalculateLevel();
             if (newLevel > currentLevel)
@@ -42,6 +55,11 @@ namespace RPG.Stats
 
         public int GetLevel()
         {
+            if (currentLevel < 1)
+            {
+                currentLevel = CalculateLevel();
+            }
+            
             return currentLevel;
         }
 

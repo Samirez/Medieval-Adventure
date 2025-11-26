@@ -90,15 +90,15 @@ namespace RPG.Resources
                 maxHealth = 1f;
             }
 
-            // Ensure current health is within [0, maxHealth]
+            // Compute percentage without mutating object state (command-query separation)
             if (health < 0f)
             {
-                Debug.LogWarning($"Health for {gameObject.name} is negative ({health}) when computing percentage. Clamping to 0.");
-                health = 0f;
+                Debug.LogWarning($"Health for {gameObject.name} is negative ({health}) when computing percentage. Using 0 for display calculations.");
             }
-            health = Mathf.Clamp(health, 0f, maxHealth);
 
-            return 100f * (health / maxHealth);
+            float clampedHealth = Mathf.Clamp(health, 0f, maxHealth);
+
+            return 100f * (clampedHealth / maxHealth);
         }
 
         private void Die()

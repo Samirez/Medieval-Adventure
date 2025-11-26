@@ -7,6 +7,8 @@ namespace RPG.Resources
     {
         [SerializeField] float experiencePoints = 0;
 
+        public event Action onExperienceGained;
+
         public float ExperiencePoints => experiencePoints;
 
         public object CaptureState()
@@ -32,6 +34,7 @@ namespace RPG.Resources
                 return;
             }
             experiencePoints += experience;
+            onExperienceGained?.Invoke();
         }
 
 
