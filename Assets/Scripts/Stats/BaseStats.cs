@@ -13,6 +13,23 @@ namespace RPG.Stats
         [SerializeField] CharacterClass characterClass;
         [SerializeField] Progression progression = null;
 
+        int currentLevel = 0;
+
+        private void Start()
+        {
+            currentLevel = CalculateLevel();
+        }
+
+        private void Update()
+        {
+            int newLevel = CalculateLevel();
+            if (newLevel > currentLevel)
+            {
+                currentLevel = newLevel;
+                print($"Leveled up to {currentLevel}!");
+            }
+        }
+
         public float GetStat(Stat stat)
         {
             if (progression == null)
@@ -20,10 +37,15 @@ namespace RPG.Stats
                 throw new InvalidOperationException($"Progression is not assigned on '{gameObject.name}'. Cannot get stat '{stat}'.");
             }
 
-            return progression.GetStat(stat, characterClass, startingLevel);
+            return progression.GetStat(stat, characterClass, GetLevel());
         }
 
         public int GetLevel()
+        {
+            return currentLevel;
+        }
+
+        public int CalculateLevel()
         {
             Experience experience = GetComponent<Experience>();
             if (experience == null) return startingLevel;
@@ -34,7 +56,7 @@ namespace RPG.Stats
                 throw new InvalidOperationException($"Progression is not assigned on '{gameObject.name}'. Cannot determine level for CharacterClass={characterClass}.");
             }
 
-            int MaxLevel = progression.GetLevels(Stat.ExperienceToLevelUp, characterClass);
+            int MaxLevel = progression.CalculateLevels(Stat.ExperienceToLevelUp, characterClass);
 
             for (int levels = 1; levels <= MaxLevel; levels++)
             {
