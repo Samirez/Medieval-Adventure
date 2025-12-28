@@ -1,4 +1,4 @@
 Prefab & Scene Component Scan Report
 =================================
-Found 118 prefabs to scan.
+Found 120 prefabs to scan.
 Missing scripts (count): 0

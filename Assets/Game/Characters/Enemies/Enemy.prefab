@@ -15,7 +15,7 @@ PrefabInstance:
     - target: {fileID: 976068238247679769, guid: ac076f224aa5695c0ac04dcd17089acd, type: 3}
       propertyPath: progression
       value: 
-      objectReference: {fileID: 11400000, guid: 2c5926307405e3478a16ff36d4040771, type: 2}
+      objectReference: {fileID: 11400000, guid: dcf5c57b6e279f4789f0bef4fbaf5364, type: 2}
     - target: {fileID: 976068238247679769, guid: ac076f224aa5695c0ac04dcd17089acd, type: 3}
       propertyPath: characterClass
       value: 2
