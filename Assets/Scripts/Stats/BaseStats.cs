@@ -14,6 +14,8 @@ namespace RPG.Stats
         [SerializeField] Progression progression = null;
         [SerializeField] GameObject levelUpEffect = null;
 
+        public event Action onLevelUp;
+
         // Ensure currentLevel is never zero to avoid level-0 edge cases when other scripts query early.
         int currentLevel = 1;
         Experience experience;
@@ -66,6 +68,7 @@ namespace RPG.Stats
                 currentLevel = newLevel;
                 Debug.Log($"Leveled up to {currentLevel}!");
                 LevelUpEffect();
+                onLevelUp?.Invoke();
             }
         }
 

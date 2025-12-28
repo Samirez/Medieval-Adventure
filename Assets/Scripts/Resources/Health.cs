@@ -8,11 +8,13 @@ namespace RPG.Resources
 {
     public class Health : MonoBehaviour, ISaveable
     {
+        [SerializeField] float regenerationPercentage = 70f;
         float health = -1f;
         bool isDead = false;
 
         private void Start()
         {
+            GetComponent<BaseStats>().onLevelUp += UpdateHealthOnLevelUp;
             if (health < 0)
             {
                 BaseStats baseStats = GetComponent<BaseStats>();
@@ -132,6 +134,12 @@ namespace RPG.Resources
             {
                 Debug.LogError($"Failed to grant experience for {gameObject.name}: {ex.Message}");
             }
+        }
+
+        private void UpdateHealthOnLevelUp()
+        {
+            float newHealth = GetComponent<BaseStats>().GetStat(Stat.Health)*regenerationPercentage/100f;
+            health = Mathf.Max(health, newHealth);
         }
 
         public object CaptureState()
