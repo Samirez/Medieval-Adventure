@@ -22,10 +22,7 @@ namespace RPG.Resources
             experiencePoints = (float)state;
         }
 
-        public float GetPoints()
-        {
-            return experiencePoints;
-        }
+
         
         public void GainExperience(float experience)
         {

@@ -40,7 +40,7 @@ namespace RPG.Stats
 
         private void Update()
         {
-            experienceText.text = experience.GetPoints().ToString("0");
+            experienceText.text = experience.ExperiencePoints.ToString("0");
         }
     }
 }

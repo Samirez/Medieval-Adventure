@@ -11,7 +11,6 @@ namespace RPG.Saving
 {
     public class SavingSystem : MonoBehaviour
     {
-        [Obsolete]
         public IEnumerator LoadLastScene(string saveFile)
         {
             Dictionary<string, object> state = LoadFile(saveFile);
@@ -24,7 +23,6 @@ namespace RPG.Saving
             RestoreState(state);
         }
 
-        [Obsolete]
         public void Save(string saveFile)
         {
             Dictionary<string, object> state = LoadFile(saveFile);
@@ -32,7 +30,6 @@ namespace RPG.Saving
             SaveFile(saveFile, state);
         }
 
-        [Obsolete]
         public void Load(string saveFile)
         {
             RestoreState(LoadFile(saveFile));
@@ -69,10 +66,9 @@ namespace RPG.Saving
             }
         }
 
-        [Obsolete]
         private void CaptureState(Dictionary<string, object> state)
         {
-            foreach (SaveableEntity saveable in FindObjectsOfType<SaveableEntity>())
+            foreach (SaveableEntity saveable in FindObjectsByType<SaveableEntity>(FindObjectsSortMode.None))
             {
                 state[saveable.GetUniqueIdentifier()] = saveable.CaptureState();
             }
@@ -80,10 +76,9 @@ namespace RPG.Saving
             state["lastSceneBuildIndex"] = SceneManager.GetActiveScene().buildIndex;
         }
 
-        [Obsolete]
         private void RestoreState(Dictionary<string, object> state)
         {
-            foreach (SaveableEntity saveable in FindObjectsOfType<SaveableEntity>())
+            foreach (SaveableEntity saveable in FindObjectsByType<SaveableEntity>(FindObjectsSortMode.None))
             {
                 string id = saveable.GetUniqueIdentifier();
                 if (state.ContainsKey(id))

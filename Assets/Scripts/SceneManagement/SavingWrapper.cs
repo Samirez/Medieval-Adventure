@@ -14,7 +14,6 @@ namespace RPG.SceneManagement
             StartCoroutine(LoadLastScene());
         }
 
-        [System.Obsolete]
         private IEnumerator LoadLastScene()
         {
             Fader fader = FindFirstObjectByType<Fader>();
@@ -22,8 +21,7 @@ namespace RPG.SceneManagement
             yield return GetComponent<SavingSystem>().LoadLastScene(defaultSaveFile);
             yield return fader.FadeIn(fadeInTime);
         }   
-
-        [System.Obsolete]
+        
         void Update()
         {
             if (Input.GetKeyDown(KeyCode.L))
@@ -36,13 +34,11 @@ namespace RPG.SceneManagement
             }
         }
 
-        [System.Obsolete]
         public void Load()
         {
             GetComponent<SavingSystem>().Load(defaultSaveFile);
         }
 
-        [System.Obsolete]
         public void Save()
         {
             GetComponent<SavingSystem>().Save(defaultSaveFile);

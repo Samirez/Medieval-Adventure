@@ -1,43 +1,75 @@
 using UnityEngine;
+using RPG.Saving;
 
-public class SavingWrapper : MonoBehaviour
-{
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+namespace RPG.Saving
+{   
+    public class SavingWrapper : MonoBehaviour
     {
-        
-    }
+        private SavingSystem savingSystem;
+        [SerializeField] string saveFile = "save";
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.S))
+        // Cache the SavingSystem reference early to avoid repeated GetComponent calls
+        private void Awake()
         {
-            Save();
+            savingSystem = GetComponent<SavingSystem>();
+            if (savingSystem == null)
+            {
+                Debug.LogError("SavingWrapper: SavingSystem component not found on the same GameObject. Disabling SavingWrapper.");
+                enabled = false;
+                return;
+            }
         }
 
-        if (Input.GetKeyDown(KeyCode.L))
+        // Update is called once per frame
+        void Update()
         {
-            Load();
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                Save();
+            }
+
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                Load();
+            }
+            if (Input.GetKeyDown(KeyCode.Delete))
+            {
+                Delete();
+            }
         }
-        if (Input.GetKeyDown(KeyCode.Delete))
+
+        public void Save()
         {
-            Delete();
+            if (!EnsureSavingSystem("save")) return;
+            #pragma warning disable CS0612
+            savingSystem.Save(saveFile);
+            #pragma warning restore CS0612
         }
-    }
 
-    public void Save()
-    {
-        GetComponent<SavingSystem>().Save();
-    }
+        public void Load()
+        {
+            if (!EnsureSavingSystem("load")) return;
+            #pragma warning disable CS0612
+            savingSystem.Load(saveFile);
+            #pragma warning restore CS0612
+        }
 
-    public void Load()
-    {
-        GetComponent<SavingSystem>().Load();
-    }
+        public void Delete()
+        {
+            if (!EnsureSavingSystem("delete save")) return;
+            #pragma warning disable CS0612
+            savingSystem.Delete(saveFile);
+            #pragma warning restore CS0612
+        }
 
-    public void Delete()
-    {
-        GetComponent<SavingSystem>().Delete();
+        private bool EnsureSavingSystem(string operationName)
+        {
+            if (savingSystem == null)
+            {
+                Debug.LogWarning($"Cannot {operationName}: SavingSystem reference is missing.");
+                return false;
+            }
+            return true;
+        }
     }
 }

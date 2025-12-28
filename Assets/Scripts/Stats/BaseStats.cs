@@ -16,6 +16,7 @@ namespace RPG.Stats
         // Ensure currentLevel is never zero to avoid level-0 edge cases when other scripts query early.
         int currentLevel = 1;
         Experience experience;
+        float lastXP;
 
         private void Awake()
         {
@@ -23,26 +24,49 @@ namespace RPG.Stats
             currentLevel = startingLevel;
         }
 
+        private void OnEnable()
+        {
+            // intentionally do not subscribe here; subscription happens in Start to ensure
+            // other initialization has completed and ordering is predictable.
+            experience = null;
+        }
+
+        private void OnDisable()
+        {
+            if (experience != null)
+            {
+                experience.onExperienceGained -= UpdateLevel;
+            }
+        }
+
         private void Start()
         {
-            currentLevel = CalculateLevel();
+            // Subscribe to experience events here so UpdateLevel runs only after Start-time init.
             experience = GetComponent<Experience>();
             if (experience != null)
             {
                 experience.onExperienceGained += UpdateLevel;
+                lastXP = experience.ExperiencePoints;
             }
+
+            currentLevel = CalculateLevel();
         }
 
         private void UpdateLevel()
         {
+            if (experience == null) return;
+            float currentXP = experience.ExperiencePoints;
+            if (Mathf.Approximately(currentXP, lastXP)) return;
+
+            lastXP = currentXP;
             int newLevel = CalculateLevel();
             if (newLevel > currentLevel)
             {
                 currentLevel = newLevel;
                 print($"Leveled up to {currentLevel}!");
+                Debug.Log($"Leveled up to {currentLevel}!");
             }
         }
-
         public float GetStat(Stat stat)
         {
             if (progression == null)
@@ -68,13 +92,13 @@ namespace RPG.Stats
             Experience experience = GetComponent<Experience>();
             if (experience == null) return startingLevel;
 
-            float currentXP = experience.GetPoints();
+            float currentXP = experience.ExperiencePoints;
             if (progression == null)
             {
                 throw new InvalidOperationException($"Progression is not assigned on '{gameObject.name}'. Cannot determine level for CharacterClass={characterClass}.");
             }
 
-            int MaxLevel = progression.CalculateLevels(Stat.ExperienceToLevelUp, characterClass);
+            int MaxLevel = progression.GetLevels(Stat.ExperienceToLevelUp, characterClass);
 
             for (int levels = 1; levels <= MaxLevel; levels++)
             {

@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -14,13 +15,42 @@ namespace RPG.Stats
     {
         [SerializeField] ProgressionCharacterClass[] characterClasses = null;
         Dictionary<CharacterClass, Dictionary<Stat, float[]>> lookupTable = null;
-        // Deduplicating logger to avoid spamming the console with repeated messages
-        private static HashSet<string> s_loggedMessages = new HashSet<string>();
+        // Deduplicating logger to avoid spamming the console with repeated messages.
+        // Make this instance-scoped so each Progression asset deduplicates its own messages
+        // and the set does not grow globally across domain reloads or play sessions.
+        private HashSet<string> _loggedMessages;
+        // Lock object used to make LogOnce thread-safe if called from multiple threads.
+        // Note: initialize in OnEnable to avoid domain-reload issues with ScriptableObject instances.
+        private object _logLock;
+
+        private void OnEnable()
+        {
+            // initialize per-instance set when the ScriptableObject becomes enabled/loaded
+            _loggedMessages = new HashSet<string>();
+            // initialize lock here rather than inline to avoid issues across domain reloads
+            if (_logLock == null) _logLock = new object();
+        }
+
+        private void OnDisable()
+        {
+            // clear to avoid holding onto memory across domain reloads or long editor sessions
+            if (_logLock != null)
+            {
+                lock (_logLock)
+                {
+                    _loggedMessages?.Clear();
+                    _loggedMessages = null;
+                }
+            }
+        }
 
         private void LogOnce(string key, string message, UnityEngine.Object context = null, bool isError = false)
         {
             // key should uniquely identify the issue (e.g. characterclass/stat/level)
-            if (!s_loggedMessages.Add(key)) return;
+            lock (_logLock)
+            {
+                if (!_loggedMessages.Add(key)) return;
+            }
 
             if (isError)
             {
@@ -39,15 +69,6 @@ namespace RPG.Stats
         public float GetStat(Stat stat, CharacterClass characterclass, int level)
         {
             BuildLookup();
-
-            // Defensive: ensure we have data for the requested character class and stat
-            if (lookupTable == null)
-            {
-                var key = $"lookupTable:null|{characterclass}|{stat}|{level}";
-                var msg = $"Progression lookup table is not built or is empty. Missing data for CharacterClass={characterclass}, Stat={stat}, Level={level}.";
-                LogOnce(key, msg, this, isError: true);
-                return 0f;
-            }
 
             if (!lookupTable.ContainsKey(characterclass))
             {
@@ -96,7 +117,7 @@ namespace RPG.Stats
             return levels[level - 1];
         }
 
-        public void BuildLookup()
+        private void BuildLookup()
         {
             if (lookupTable != null) return;
 
@@ -108,6 +129,8 @@ namespace RPG.Stats
             {
                 var statLookupTable = new Dictionary<Stat, float[]>();
 
+                if (progressionClass.stats == null) continue;
+
                 foreach (ProgressionStat progressionStat in progressionClass.stats)
                 {
                     statLookupTable[progressionStat.stat] = progressionStat.levels;
@@ -116,27 +139,22 @@ namespace RPG.Stats
                 lookupTable[progressionClass.CharacterClass] = statLookupTable;
             }
         }
-
         public int GetLevels(Stat stat, CharacterClass characterClass)
         {
             BuildLookup();
 
-            if (lookupTable == null)
-            {
-                Debug.LogWarning($"Progression lookup table is not built or is empty. Cannot get levels for CharacterClass={characterClass}, Stat={stat}.", this);
-                return 0;
-            }
-
             if (!lookupTable.ContainsKey(characterClass))
             {
-                Debug.LogWarning($"Progression has no entry for CharacterClass={characterClass}. Cannot get levels for Stat={stat}.", this);
+                var key = $"getLevels:missingClass:{characterClass}|{stat}";
+                LogOnce(key, $"Progression has no entry for CharacterClass={characterClass}. Cannot get levels for Stat={stat}.", this);
                 return 0;
             }
 
             var statLookup = lookupTable[characterClass];
             if (!statLookup.ContainsKey(stat))
             {
-                Debug.LogWarning($"Progression for CharacterClass={characterClass} has no stat entry for Stat={stat}.", this);
+                var key = $"getLevels:missingStat:{characterClass}|{stat}";
+                LogOnce(key, $"Progression for CharacterClass={characterClass} has no stat entry for Stat={stat}.", this);
                 return 0;
             }
 
@@ -144,8 +162,6 @@ namespace RPG.Stats
             if (levels == null) return 0;
             return levels.Length;
         }
-
-        [System.Serializable]
         class ProgressionCharacterClass
         {
             public CharacterClass CharacterClass;
