@@ -12,6 +12,7 @@ namespace RPG.Stats
         [SerializeField] int startingLevel = 1;
         [SerializeField] CharacterClass characterClass;
         [SerializeField] Progression progression = null;
+        [SerializeField] GameObject levelUpEffect = null;
 
         // Ensure currentLevel is never zero to avoid level-0 edge cases when other scripts query early.
         int currentLevel = 1;
@@ -22,13 +23,14 @@ namespace RPG.Stats
         {
             // Assign from serialized startingLevel (set by inspector) so Awake-time queries see the correct base level.
             currentLevel = startingLevel;
+            // Cache the Experience component once during Awake to avoid repeated GetComponent calls.
+            experience = GetComponent<Experience>();
         }
 
         private void OnEnable()
         {
             // Subscribe to experience events here so enable/disable cycles correctly
-            // restore event handlers and experience state.
-            experience = GetComponent<Experience>();
+            // restore event handlers and experience state. Use cached `experience`.
             if (experience != null)
             {
                 experience.onExperienceGained -= UpdateLevel; // ensure no duplicate subscriptions
@@ -48,11 +50,6 @@ namespace RPG.Stats
         private void Start()
         {
             // One-time setup that should only run once per object lifetime.
-            if (experience == null)
-            {
-                experience = GetComponent<Experience>();
-            }
-
             currentLevel = CalculateLevel();
         }
 
@@ -68,8 +65,15 @@ namespace RPG.Stats
             {
                 currentLevel = newLevel;
                 Debug.Log($"Leveled up to {currentLevel}!");
+                LevelUpEffect();
             }
         }
+
+        private void LevelUpEffect()
+        {
+            Instantiate(levelUpEffect, transform);    
+        }
+
         public float GetStat(Stat stat)
         {
             if (progression == null)
@@ -92,11 +96,15 @@ namespace RPG.Stats
 
         public int CalculateLevel()
         {
-            // Prefer the cached `experience` reference set in OnEnable/Start.
-            Experience exp = experience ?? GetComponent<Experience>();
-            if (exp == null) return startingLevel;
+            // Prefer the cached `experience` reference; if it's missing, cache the component here
+            // to avoid repeated GetComponent lookups on subsequent calls.
+            if (experience == null)
+            {
+                experience = GetComponent<Experience>();
+            }
+            if (experience == null) return startingLevel;
 
-            float currentXP = exp.ExperiencePoints;
+            float currentXP = experience.ExperiencePoints;
             if (progression == null)
             {
                 throw new InvalidOperationException($"Progression is not assigned on '{gameObject.name}'. Cannot determine level for CharacterClass={characterClass}.");

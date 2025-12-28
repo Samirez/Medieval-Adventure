@@ -43,18 +43,17 @@ namespace RPG.Saving
             {
                 File.Delete(path);
             }
-            catch (System.IO.IOException ex)
+            catch (IOException ex)
             {
                 Debug.LogError($"Failed to delete save file '{saveFile}' at path '{path}': {ex}");
                 throw;
             }
-            catch (System.UnauthorizedAccessException ex)
+            catch (UnauthorizedAccessException ex)
             {
-                Debug.LogError($"Unauthorized deleting save file '{saveFile}' at path '{path}': {ex}");
+                Debug.LogError($"Unauthorized access when deleting save file '{saveFile}' at path '{path}': {ex}");
                 throw;
             }
         }
-
         private Dictionary<string, object> LoadFile(string saveFile)
         {
             string path = GetPathFromSaveFile(saveFile);
