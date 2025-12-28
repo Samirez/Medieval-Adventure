@@ -56,7 +56,7 @@ namespace RPG.Saving
 
         public void Delete()
         {
-            if (!EnsureSavingSystem("delete save")) return;
+            if (!EnsureSavingSystem("delete")) return;
             #pragma warning disable CS0612
             savingSystem.Delete(saveFile);
             #pragma warning restore CS0612

@@ -28,7 +28,7 @@ namespace RPG.Stats
             // initialize per-instance set when the ScriptableObject becomes enabled/loaded
             _loggedMessages = new HashSet<string>();
             // initialize lock here rather than inline to avoid issues across domain reloads
-            if (_logLock == null) _logLock = new object();
+            _logLock = new object();
         }
 
         private void OnDisable()

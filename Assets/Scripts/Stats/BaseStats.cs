@@ -26,9 +26,15 @@ namespace RPG.Stats
 
         private void OnEnable()
         {
-            // intentionally do not subscribe here; subscription happens in Start to ensure
-            // other initialization has completed and ordering is predictable.
-            experience = null;
+            // Subscribe to experience events here so enable/disable cycles correctly
+            // restore event handlers and experience state.
+            experience = GetComponent<Experience>();
+            if (experience != null)
+            {
+                experience.onExperienceGained -= UpdateLevel; // ensure no duplicate subscriptions
+                experience.onExperienceGained += UpdateLevel;
+                lastXP = experience.ExperiencePoints;
+            }
         }
 
         private void OnDisable()
@@ -41,12 +47,10 @@ namespace RPG.Stats
 
         private void Start()
         {
-            // Subscribe to experience events here so UpdateLevel runs only after Start-time init.
-            experience = GetComponent<Experience>();
-            if (experience != null)
+            // One-time setup that should only run once per object lifetime.
+            if (experience == null)
             {
-                experience.onExperienceGained += UpdateLevel;
-                lastXP = experience.ExperiencePoints;
+                experience = GetComponent<Experience>();
             }
 
             currentLevel = CalculateLevel();
@@ -63,7 +67,6 @@ namespace RPG.Stats
             if (newLevel > currentLevel)
             {
                 currentLevel = newLevel;
-                print($"Leveled up to {currentLevel}!");
                 Debug.Log($"Leveled up to {currentLevel}!");
             }
         }
@@ -89,10 +92,11 @@ namespace RPG.Stats
 
         public int CalculateLevel()
         {
-            Experience experience = GetComponent<Experience>();
-            if (experience == null) return startingLevel;
+            // Prefer the cached `experience` reference set in OnEnable/Start.
+            Experience exp = experience ?? GetComponent<Experience>();
+            if (exp == null) return startingLevel;
 
-            float currentXP = experience.ExperiencePoints;
+            float currentXP = exp.ExperiencePoints;
             if (progression == null)
             {
                 throw new InvalidOperationException($"Progression is not assigned on '{gameObject.name}'. Cannot determine level for CharacterClass={characterClass}.");

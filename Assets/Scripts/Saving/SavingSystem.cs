@@ -38,7 +38,21 @@ namespace RPG.Saving
 
         public void Delete(string saveFile)
         {
-            File.Delete(GetPathFromSaveFile(saveFile));
+            string path = GetPathFromSaveFile(saveFile);
+            try
+            {
+                File.Delete(path);
+            }
+            catch (System.IO.IOException ex)
+            {
+                Debug.LogError($"Failed to delete save file '{saveFile}' at path '{path}': {ex}");
+                throw;
+            }
+            catch (System.UnauthorizedAccessException ex)
+            {
+                Debug.LogError($"Unauthorized deleting save file '{saveFile}' at path '{path}': {ex}");
+                throw;
+            }
         }
 
         private Dictionary<string, object> LoadFile(string saveFile)
