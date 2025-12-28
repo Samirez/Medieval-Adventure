@@ -11081,10 +11081,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy
       objectReference: {fileID: 0}
-    - target: {fileID: 6245412323787292862, guid: d035140293cee4cf6ba12ca147e18daf, type: 3}
-      propertyPath: progression
-      value: 
-      objectReference: {fileID: 11400000, guid: dcf5c57b6e279f4789f0bef4fbaf5364, type: 2}
     - target: {fileID: 6783580846944196064, guid: d035140293cee4cf6ba12ca147e18daf, type: 3}
       propertyPath: patrolPath
       value: 
