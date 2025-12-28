@@ -53,12 +53,39 @@ namespace RPG.Resources
                 health = 1f;
             }
 
+            print($"{gameObject.name} took {damage} damage from {instigator.name}.");
+
             health = Mathf.Max(health - damage, 0f);
 
             if (health <= 0f)
             {
                 Die();
                 GrantExperience(instigator);
+            }
+        }
+
+        public float GetHealthPoints()
+        {
+            return health;
+        }
+
+        public float GetMaxHealthPoints()
+        {
+            BaseStats baseStats = GetComponent<BaseStats>();
+            if (baseStats == null)
+            {
+                Debug.LogWarning($"BaseStats component missing on {gameObject.name} when getting max health. Returning fallback value of 1.");
+                return 1f;
+            }
+
+            try
+            {
+                return baseStats.GetStat(Stat.Health);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Debug.LogWarning($"Failed to get max health for {gameObject.name}: {ex.Message}. Returning fallback value of 1.");
+                return 1f;
             }
         }
 
