@@ -11,6 +11,13 @@ namespace RPG.Combat
         [SerializeField] GameObject equippedPrefab = null;
         [SerializeField] float weaponRange = 2f;
         [SerializeField] float weaponDamage = 5f;
+        /// <summary>
+        /// Percentage bonus applied to the weapon's base damage.
+        /// Interpreted as a fractional value where 0.0 = 0% and 1.0 = 100% (for example, 0.25 adds 25% of base damage).
+        /// Expected designer range: 0..1 (0–100%). This ScriptableObject does not automatically clamp or normalize the value;
+        /// any clamping/validation should be performed by the code that consumes this value if required by gameplay rules.
+        /// Values greater than 1.0 may be used to express bonuses above 100% if supported by the game.
+        /// </summary>
         [SerializeField] float percentageBonus = 0;
         [SerializeField] bool isRightHanded = true;
         [SerializeField] Projectile projectile = null;

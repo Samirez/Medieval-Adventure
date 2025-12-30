@@ -20,6 +20,7 @@ namespace RPG.Stats
         int currentLevel = 1;
         Experience experience;
         float lastXP;
+        IModifierProvider[] modifierProviders;
 
         private void Awake()
         {
@@ -27,6 +28,8 @@ namespace RPG.Stats
             currentLevel = startingLevel;
             // Cache the Experience component once during Awake to avoid repeated GetComponent calls.
             experience = GetComponent<Experience>();
+            // Cache modifier providers to avoid allocations from GetComponents at runtime.
+            modifierProviders = GetComponents<IModifierProvider>();
         }
 
         private void OnEnable()
@@ -80,11 +83,6 @@ namespace RPG.Stats
 
         public float GetStat(Stat stat)
         {
-            if (progression == null)
-            {
-                throw new InvalidOperationException($"Progression is not assigned on '{gameObject.name}'. Cannot get stat '{stat}'.");
-            }
-
             return (GetBaseStat(stat) + GetAdditiveModifier(stat))*(1 + GetPercentageModifier(stat)/100);
         }
 
@@ -111,7 +109,12 @@ namespace RPG.Stats
         private float GetAdditiveModifier(Stat stat)
         {
             float total = 0;
-            foreach (IModifierProvider provider in GetComponents<IModifierProvider>())
+            if (modifierProviders == null || modifierProviders.Length == 0)
+            {
+                modifierProviders = GetComponents<IModifierProvider>();
+            }
+
+            foreach (IModifierProvider provider in modifierProviders)
             {
                 foreach (float modifier in provider.GetAdditiveModifiers(stat))
                 {
@@ -124,7 +127,12 @@ namespace RPG.Stats
         private float GetPercentageModifier(Stat stat)
         {
             float total = 0;
-            foreach (IModifierProvider provider in GetComponents<IModifierProvider>())
+            if (modifierProviders == null || modifierProviders.Length == 0)
+            {
+                modifierProviders = GetComponents<IModifierProvider>();
+            }
+
+            foreach (IModifierProvider provider in modifierProviders)
             {
                 foreach (float modifier in provider.GetPercentageModifiers(stat))
                 {
@@ -132,6 +140,12 @@ namespace RPG.Stats
                 }
             }
             return total;
+        }
+
+        // Call this if modifier providers are added/removed at runtime and the cache needs refreshing.
+        public void RefreshModifierProviders()
+        {
+            modifierProviders = GetComponents<IModifierProvider>();
         }
 
         private int CalculateLevel()

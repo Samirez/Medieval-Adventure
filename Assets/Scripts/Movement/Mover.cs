@@ -13,10 +13,14 @@ namespace RPG.Movement
         NavMeshAgent navMeshAgent;
         Health health;
 
-        private void Start()
+        private void Awake()
         {
             health = GetComponent<Health>();
             navMeshAgent = GetComponent<NavMeshAgent>();
+        }
+
+        private void Start()
+        {
             if (navMeshAgent == null)
             {
                 Debug.LogError("NavMeshAgent component is missing on " + gameObject.name);
@@ -73,9 +77,10 @@ namespace RPG.Movement
         public void RestoreState(object state)
         {
           SerializableVector3 position = (SerializableVector3)state;
-          GetComponent<NavMeshAgent>().enabled = false;
+          navMeshAgent.enabled = false;
           transform.position = position.ToVector();
-          GetComponent<NavMeshAgent>().enabled = true;
+          navMeshAgent.enabled = true;
+          GetComponent<ActionScheduler>().CancelCurrentAction();
         }
     }
 }
