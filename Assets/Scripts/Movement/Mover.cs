@@ -12,11 +12,13 @@ namespace RPG.Movement
         [SerializeField] float maxSpeed = 6f;
         NavMeshAgent navMeshAgent;
         Health health;
+        ActionScheduler actionScheduler;
 
         private void Awake()
         {
             health = GetComponent<Health>();
             navMeshAgent = GetComponent<NavMeshAgent>();
+            actionScheduler = GetComponent<ActionScheduler>();
         }
 
         private void Start()
@@ -36,7 +38,7 @@ namespace RPG.Movement
         public void StartMoveAction(Vector3 destination, float speedFraction)
         {
             if (navMeshAgent == null) return; // Prevent null reference
-            GetComponent<ActionScheduler>().StartAction(this);
+            if (actionScheduler != null) actionScheduler.StartAction(this);
             MoveTo(destination, speedFraction);
         }
 
@@ -76,11 +78,19 @@ namespace RPG.Movement
 
         public void RestoreState(object state)
         {
-          SerializableVector3 position = (SerializableVector3)state;
-          navMeshAgent.enabled = false;
-          transform.position = position.ToVector();
-          navMeshAgent.enabled = true;
-          GetComponent<ActionScheduler>().CancelCurrentAction();
+            SerializableVector3 position = (SerializableVector3)state;
+            if (navMeshAgent != null)
+            {
+                    navMeshAgent.enabled = false;
+            }
+
+            transform.position = position.ToVector();
+
+            if (navMeshAgent != null)
+            {
+                    navMeshAgent.enabled = true;
+            }
+            if (actionScheduler != null) actionScheduler.CancelCurrentAction();
         }
     }
 }

@@ -109,7 +109,7 @@ namespace RPG.Stats
         private float GetAdditiveModifier(Stat stat)
         {
             float total = 0;
-            if (modifierProviders == null || modifierProviders.Length == 0)
+            if (modifierProviders == null)
             {
                 modifierProviders = GetComponents<IModifierProvider>();
             }
@@ -127,7 +127,7 @@ namespace RPG.Stats
         private float GetPercentageModifier(Stat stat)
         {
             float total = 0;
-            if (modifierProviders == null || modifierProviders.Length == 0)
+            if (modifierProviders == null)
             {
                 modifierProviders = GetComponents<IModifierProvider>();
             }
