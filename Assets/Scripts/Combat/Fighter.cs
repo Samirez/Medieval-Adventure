@@ -128,6 +128,7 @@ namespace RPG.Combat
         {
             if (stat == Stat.Damage)
             {
+                if (currentWeapon == null) yield break;
                 yield return currentWeapon.GetWeaponDamage();
             }
         }
@@ -136,22 +137,9 @@ namespace RPG.Combat
         {
             if (stat == Stat.Damage)
             {
+                if (currentWeapon == null) yield break;
                 yield return currentWeapon.GetPercentageBonus();
             }
-        }
-
-        private float GetAdditiveModifier(Stat stat)
-        {
-            float total = 0;
-            foreach (IModifierProvider provider in GetComponents<IModifierProvider>())
-            {
-                foreach (float modifier in provider.GetAdditiveModifiers(stat))
-                {
-                    total += modifier;
-                }
-            }
-
-            return total;
         }
 
        public bool CanAttack(GameObject combatTarget)

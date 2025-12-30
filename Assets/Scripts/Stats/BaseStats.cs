@@ -85,9 +85,18 @@ namespace RPG.Stats
                 throw new InvalidOperationException($"Progression is not assigned on '{gameObject.name}'. Cannot get stat '{stat}'.");
             }
 
-            return progression.GetStat(stat, characterClass, GetLevel()) + GetAdditiveModifier(stat);
+            return (GetBaseStat(stat) + GetAdditiveModifier(stat))*(1 + GetPercentageModifier(stat)/100);
         }
 
+        public float GetBaseStat(Stat stat)
+        {
+            if (progression == null)
+            {
+                throw new InvalidOperationException($"Progression is not assigned on '{gameObject.name}'. Cannot get base stat '{stat}'.");
+            }
+
+            return progression.GetStat(stat, characterClass, GetLevel());
+        }
 
         public int GetLevel()
         {
@@ -97,6 +106,32 @@ namespace RPG.Stats
             }
             
             return currentLevel;
+        }
+
+        private float GetAdditiveModifier(Stat stat)
+        {
+            float total = 0;
+            foreach (IModifierProvider provider in GetComponents<IModifierProvider>())
+            {
+                foreach (float modifier in provider.GetAdditiveModifiers(stat))
+                {
+                    total += modifier;
+                }
+            }
+            return total;
+        }
+
+        private float GetPercentageModifier(Stat stat)
+        {
+            float total = 0;
+            foreach (IModifierProvider provider in GetComponents<IModifierProvider>())
+            {
+                foreach (float modifier in provider.GetPercentageModifiers(stat))
+                {
+                    total += modifier;
+                }
+            }
+            return total;
         }
 
         private int CalculateLevel()
