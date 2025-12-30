@@ -77,6 +77,7 @@ namespace RPG.Stats
             Instantiate(levelUpEffect, transform);    
         }
 
+
         public float GetStat(Stat stat)
         {
             if (progression == null)
@@ -84,8 +85,9 @@ namespace RPG.Stats
                 throw new InvalidOperationException($"Progression is not assigned on '{gameObject.name}'. Cannot get stat '{stat}'.");
             }
 
-            return progression.GetStat(stat, characterClass, GetLevel());
+            return progression.GetStat(stat, characterClass, GetLevel()) + GetAdditiveModifier(stat);
         }
+
 
         public int GetLevel()
         {
@@ -97,7 +99,7 @@ namespace RPG.Stats
             return currentLevel;
         }
 
-        public int CalculateLevel()
+        private int CalculateLevel()
         {
             // Prefer the cached `experience` reference; if it's missing, cache the component here
             // to avoid repeated GetComponent lookups on subsequent calls.
