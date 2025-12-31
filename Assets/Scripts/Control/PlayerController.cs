@@ -10,7 +10,7 @@ namespace RPG.Control
     {
         Health playerHealth;
 
-        void Start()
+        void Awake()
         {
             playerHealth = GetComponent<Health>();
         }
