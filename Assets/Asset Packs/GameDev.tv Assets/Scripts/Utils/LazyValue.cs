@@ -1,4 +1,4 @@
-﻿namespace GameDevTV.Utils
+﻿﻿namespace GameDevTV.Utils
 {
     /// <summary>
     /// Container class that wraps a value and ensures initialisation is 
@@ -20,9 +20,12 @@
         /// </param>
         public LazyValue(InitializerDelegate initializer)
         {
+            if (initializer == null)
+            {
+                throw new System.ArgumentNullException(nameof(initializer));
+            }
             _initializer = initializer;
         }
-
         /// <summary>
         /// Get or set the contents of this container.
         /// </summary>

@@ -42,25 +42,25 @@ namespace RPG.Resources
         private void Start()
         {
             GetComponent<BaseStats>().onLevelUp += UpdateHealthOnLevelUp;
-            if (health.Value < 0)
+            if (health.value < 0)
             {
                 BaseStats baseStats = GetComponent<BaseStats>();
                 if (baseStats == null)
                 {
                     Debug.LogWarning($"BaseStats component missing on {gameObject.name} during Start. Using fallback health value of 1.");
-                    health.Value = 1f;
+                    health.value = 1f;
                     isDead = false;
                     return;
                 }
 
                 try
                 {
-                    health.Value = baseStats.GetStat(Stat.Health);
+                    health.value = baseStats.GetStat(Stat.Health);
                 }
                 catch (InvalidOperationException ex)
                 {
                     Debug.LogWarning($"Failed to initialize health for {gameObject.name}: {ex.Message}. Using fallback health value of 1.");
-                    health.Value = 1f;
+                    health.value = 1f;
                     isDead = false;
                 }
             }
@@ -74,17 +74,17 @@ namespace RPG.Resources
         public void TakeDamage(GameObject instigator, float damage)
         {
             // Ensure health is initialized to a sensible positive value before applying damage
-            if (health.Value < 0f)
+            if (health.value < 0f)
             {
-                Debug.LogWarning($"Health for {gameObject.name} was uninitialized (value {health.Value}). Falling back to 1 before applying damage.");
-                health.Value = 1f;
+                Debug.LogWarning($"Health for {gameObject.name} was uninitialized (value {health.value}). Falling back to 1 before applying damage.");
+                health.value = 1f;
             }
 
             print($"{gameObject.name} took {damage} damage from {instigator.name}.");
 
-            health.Value = Mathf.Max(health.Value - damage, 0f);
+            health.value = Mathf.Max(health.value - damage, 0f);
 
-            if (health.Value <= 0f)
+            if (health.value <= 0f)
             {
                 Die();
                 GrantExperience(instigator);
@@ -93,7 +93,7 @@ namespace RPG.Resources
 
         public float GetHealthPoints()
         {
-            return health;
+            return health.value;
         }
 
         public float GetMaxHealthPoints()
@@ -147,12 +147,18 @@ namespace RPG.Resources
             }
 
             // Compute percentage without mutating object state (command-query separation)
-            if (health.Value < 0f)
+            if (health.value < 0f)
             {
-                Debug.LogWarning($"Health for {gameObject.name} is negative ({health.Value}) when computing percentage. Using 0 for display calculations.");
+                Debug.LogWarning($"Health for {gameObject.name} is negative ({health.value}) when computing percentage. Using 0 for display calculations.");
             }
 
-            float clampedHealth = Mathf.Clamp(health.Value, 0f, maxHealth);
+            if (health.value < 0f)
+            {
+                // if negative, treat as zero for percentage
+                health.value = 0f;
+            }
+
+            float clampedHealth = Mathf.Clamp(health.value, 0f, maxHealth);
 
             return 100f * (clampedHealth / maxHealth);
         }
@@ -192,19 +198,19 @@ namespace RPG.Resources
 
         private void UpdateHealthOnLevelUp()
         {
-            float newHealth = GetComponent<BaseStats>().GetStat(Stat.Health)*regenerationPercentage/100f;
-            health = Mathf.Max(health, newHealth);
+            float newHealth = GetComponent<BaseStats>().GetStat(Stat.Health) * regenerationPercentage / 100f;
+            health.value = Mathf.Max(health.value, newHealth);
         }
 
         public object CaptureState()
         {
-            return health;
+            return health.value;
         }
 
         public void RestoreState(object state)
         {
-            health.Value = (float)state;
-            if (health.Value <= 0)
+            health.value = (float)state;
+            if (health.value <= 0)
             {
                 Die();
             }

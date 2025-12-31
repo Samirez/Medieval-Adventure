@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using RPG.Resources;
+using GameDevTV.Utils;
 
 namespace RPG.Stats
 {
@@ -25,7 +26,7 @@ namespace RPG.Stats
         private void Awake()
         {
             // Assign from serialized startingLevel (set by inspector) so Awake-time queries see the correct base level.
-            currentLevel = new LazyValue<int>(() => CalculateLevel);
+            currentLevel = new LazyValue<int>(CalculateLevel);
             // Cache the Experience component once during Awake to avoid repeated GetComponent calls.
             experience = GetComponent<Experience>();
             // Cache modifier providers to avoid allocations from GetComponents at runtime.
@@ -55,7 +56,7 @@ namespace RPG.Stats
         private void Start()
         {
             // One-time setup that should only run once per object lifetime.
-            currentLevel = CalculateLevel();
+            currentLevel.ForceInit();
         }
 
         private void UpdateLevel()
@@ -66,10 +67,10 @@ namespace RPG.Stats
 
             lastXP = currentXP;
             int newLevel = CalculateLevel();
-            if (newLevel > currentLevel)
+            if (newLevel > currentLevel.value)
             {
-                currentLevel = newLevel;
-                Debug.Log($"Leveled up to {currentLevel}!");
+                currentLevel.value = newLevel;
+                Debug.Log($"Leveled up to {currentLevel.value}!");
                 LevelUpEffect();
                 onLevelUp?.Invoke();
             }
@@ -98,12 +99,7 @@ namespace RPG.Stats
 
         public int GetLevel()
         {
-            if (currentLevel.Value < 1)
-            {
-                currentLevel = new LazyValue<int>(() => CalculateLevel());
-            }
-
-            return currentLevel.Value;
+            return currentLevel.value;
         }
 
         private float GetAdditiveModifier(Stat stat)

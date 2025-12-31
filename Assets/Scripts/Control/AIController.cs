@@ -4,6 +4,7 @@ using RPG.Core;
 using RPG.Movement;
 using RPG.Resources;
 using System;
+using GameDevTV.Utils;
 
 namespace RPG.Control 
 {
@@ -62,7 +63,7 @@ namespace RPG.Control
             }
         }
 
-        private float GetGuardLocation()
+        private Vector3 GetGuardLocation()
         {
             return transform.position;
         }
@@ -117,7 +118,7 @@ namespace RPG.Control
 
         private void PatrolBehavior()
         {
-            Vector3 nextPosition = guardLocation;
+            Vector3 nextPosition = guardLocation.value;
             if (patrolPath != null)
             {
                 if (AtWaypoint())
