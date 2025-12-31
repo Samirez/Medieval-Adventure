@@ -20,7 +20,7 @@ namespace RPG.Control
         Health health;
         Mover mover;
 
-        Vector3 guardLocation;
+        LazyValue<Vector3> guardLocation;
         float timeSinceLastSawPlayer = Mathf.Infinity;
         int currentWaypointIndex = 0;
         float timeSinceArrivedAtWaypoint = Mathf.Infinity;
@@ -28,21 +28,60 @@ namespace RPG.Control
         private void Awake()
         {
             fighter = GetComponent<Fighter>();
+            if (fighter == null)
+            {
+                Debug.LogError($"Fighter component missing on '{gameObject.name}'. AIController requires a Fighter.");
+            }
+
             player = GameObject.FindWithTag("Player");
+
             health = GetComponent<Health>();
+            if (health == null)
+            {
+                Debug.LogError($"Health component missing on '{gameObject.name}'. AIController requires a Health.");
+            }
+
             mover = GetComponent<Mover>();
+            if (mover == null)
+            {
+                Debug.LogError($"Mover component missing on '{gameObject.name}'. AIController requires a Mover to patrol and move.");
+            }
         }
 
         private void Start()
         {
-            guardLocation = transform.position;
+            guardLocation = new LazyValue<Vector3>(GetGuardLocation);
+            // Player may be instantiated after Awake in some setups; try a fallback lookup here.
+            if (player == null)
+            {
+                player = GameObject.FindWithTag("Player");
+                if (player == null)
+                {
+                    Debug.LogWarning("AIController: Player GameObject with tag 'Player' not found in Start(); AI behaviour that targets the player will be disabled.");
+                }
+            }
+        }
+
+        private float GetGuardLocation()
+        {
+            return transform.position;
         }
 
         private void Update()
         {
             if (health == null || health.IsDead()) return;
 
-            if (InAttackRangeOfPlayer() && fighter.CanAttack(player))
+            // Ensure required references exist before attempting behavior that depends on them.
+            bool canSeeAndAttack = false;
+            if (player != null && fighter != null)
+            {
+                if (InAttackRangeOfPlayer() && fighter.CanAttack(player))
+                {
+                    canSeeAndAttack = true;
+                }
+            }
+
+            if (canSeeAndAttack)
             {
                 AttackBehavior();
             }
@@ -67,6 +106,7 @@ namespace RPG.Control
         private void AttackBehavior()
         {
             timeSinceLastSawPlayer = 0;
+            if (fighter == null || player == null) return;
             fighter.Attack(player);
         }
 
@@ -89,7 +129,14 @@ namespace RPG.Control
             }
             if (timeSinceArrivedAtWaypoint > waypointDwellTime)
             {
-                mover.StartMoveAction(nextPosition, patrolSpeedFraction);
+                if (mover != null)
+                {
+                    mover.StartMoveAction(nextPosition, patrolSpeedFraction);
+                }
+                else
+                {
+                    Debug.LogWarning($"AIController on '{gameObject.name}' cannot patrol because Mover is missing.");
+                }
             }
           
             

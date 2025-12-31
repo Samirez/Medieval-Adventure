@@ -18,6 +18,11 @@ namespace RPG.SceneManagement
         {
             yield return GetComponent<SavingSystem>().LoadLastScene(defaultSaveFile);
             Fader fader = FindFirstObjectByType<Fader>();
+            if (fader == null)
+            {
+                Debug.LogError("Fader not found in scene!");
+                yield break;
+            }
             fader.FadeOutImmediate();
             yield return fader.FadeIn(fadeInTime);
         }   

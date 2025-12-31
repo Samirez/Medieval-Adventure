@@ -1,4 +1,5 @@
 using System;
+using GameDevTV.Utils;
 using UnityEngine;
 using RPG.Saving;
 using RPG.Stats;
@@ -9,31 +10,57 @@ namespace RPG.Resources
     public class Health : MonoBehaviour, ISaveable
     {
         [SerializeField] float regenerationPercentage = 70f;
-        float health = -1f;
+        LazyValue<float> health;
         bool isDead = false;
+
+
+        private void Awake()
+        {
+            health = new LazyValue<float>(GetInitialHealth);
+        }
+
+        private float GetInitialHealth()
+        {
+            BaseStats baseStats = GetComponent<BaseStats>();
+            if (baseStats == null)
+            {
+                Debug.LogWarning($"BaseStats component missing on {gameObject.name} during health initialization. Using fallback health value of 1.");
+                return 1f;
+            }
+
+            try
+            {
+                return baseStats.GetStat(Stat.Health);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Debug.LogWarning($"Failed to initialize health for {gameObject.name}: {ex.Message}. Using fallback health value of 1.");
+                return 1f;
+            }
+        }
 
         private void Start()
         {
             GetComponent<BaseStats>().onLevelUp += UpdateHealthOnLevelUp;
-            if (health < 0)
+            if (health.Value < 0)
             {
                 BaseStats baseStats = GetComponent<BaseStats>();
                 if (baseStats == null)
                 {
                     Debug.LogWarning($"BaseStats component missing on {gameObject.name} during Start. Using fallback health value of 1.");
-                    health = 1f;
+                    health.Value = 1f;
                     isDead = false;
                     return;
                 }
 
                 try
                 {
-                    health = baseStats.GetStat(Stat.Health);
+                    health.Value = baseStats.GetStat(Stat.Health);
                 }
                 catch (InvalidOperationException ex)
                 {
                     Debug.LogWarning($"Failed to initialize health for {gameObject.name}: {ex.Message}. Using fallback health value of 1.");
-                    health = 1f;
+                    health.Value = 1f;
                     isDead = false;
                 }
             }
@@ -47,17 +74,17 @@ namespace RPG.Resources
         public void TakeDamage(GameObject instigator, float damage)
         {
             // Ensure health is initialized to a sensible positive value before applying damage
-            if (health < 0f)
+            if (health.Value < 0f)
             {
-                Debug.LogWarning($"Health for {gameObject.name} was uninitialized (value {health}). Falling back to 1 before applying damage.");
-                health = 1f;
+                Debug.LogWarning($"Health for {gameObject.name} was uninitialized (value {health.Value}). Falling back to 1 before applying damage.");
+                health.Value = 1f;
             }
 
             print($"{gameObject.name} took {damage} damage from {instigator.name}.");
 
-            health = Mathf.Max(health - damage, 0f);
+            health.Value = Mathf.Max(health.Value - damage, 0f);
 
-            if (health <= 0f)
+            if (health.Value <= 0f)
             {
                 Die();
                 GrantExperience(instigator);
@@ -120,12 +147,12 @@ namespace RPG.Resources
             }
 
             // Compute percentage without mutating object state (command-query separation)
-            if (health < 0f)
+            if (health.Value < 0f)
             {
-                Debug.LogWarning($"Health for {gameObject.name} is negative ({health}) when computing percentage. Using 0 for display calculations.");
+                Debug.LogWarning($"Health for {gameObject.name} is negative ({health.Value}) when computing percentage. Using 0 for display calculations.");
             }
 
-            float clampedHealth = Mathf.Clamp(health, 0f, maxHealth);
+            float clampedHealth = Mathf.Clamp(health.Value, 0f, maxHealth);
 
             return 100f * (clampedHealth / maxHealth);
         }
@@ -176,8 +203,8 @@ namespace RPG.Resources
 
         public void RestoreState(object state)
         {
-            health = (float)state;
-            if (health <= 0)
+            health.Value = (float)state;
+            if (health.Value <= 0)
             {
                 Die();
             }

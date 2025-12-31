@@ -8,14 +8,36 @@ namespace RPG.Cinematics
     public class CinematicControlRemover : MonoBehaviour
     {
         GameObject player;
+        PlayableDirector director;
+        ActionScheduler actionScheduler;
+        PlayerController playerController;
         private void Awake()
         {
             player = GameObject.FindWithTag("Player");
+            if (player == null)
+            {
+                Debug.LogError("Player GameObject not found. Ensure a GameObject is tagged as 'Player'.");
+            }
+            director = GetComponent<PlayableDirector>();
+
+            if (player != null)
+            {
+                actionScheduler = player.GetComponent<ActionScheduler>();
+                if (actionScheduler == null)
+                {
+                    Debug.LogWarning($"Player GameObject '{player.name}' is missing an ActionScheduler component.");
+                }
+
+                playerController = player.GetComponent<PlayerController>();
+                if (playerController == null)
+                {
+                    Debug.LogWarning($"Player GameObject '{player.name}' is missing a PlayerController component.");
+                }
+            }
         }
 
         private void OnEnable()
         {
-            PlayableDirector director = GetComponent<PlayableDirector>();
             if (director != null)
             {
                 director.played += DisableControl;
@@ -25,7 +47,6 @@ namespace RPG.Cinematics
 
         private void OnDisable()
         {
-            PlayableDirector director = GetComponent<PlayableDirector>();
             if (director != null)
             {
                 director.played -= DisableControl;
@@ -35,13 +56,19 @@ namespace RPG.Cinematics
 
         void DisableControl(PlayableDirector director)
         {
-            player.GetComponent<ActionScheduler>().CancelCurrentAction();
-            player.GetComponent<PlayerController>().enabled = false;
+            actionScheduler?.CancelCurrentAction();
+            if (playerController != null)
+            {
+                playerController.enabled = false;
+            }
         }
 
         void EnableControl(PlayableDirector director)
         {
-            player.GetComponent<PlayerController>().enabled = true;
+            if (playerController != null)
+            {
+                playerController.enabled = true;
+            }
         }
     }
 }

@@ -18,14 +18,24 @@ namespace RPG.Combat
         [SerializeField] Weapon defaultWeapon = null;
 
         Health target;
-        Weapon currentWeapon = null;
+        LazyValue<Weapon> currentWeapon;
         float timeSinceLastAttack = Mathf.Infinity;
+
+        private void Awake()
+        {
+            currentWeapon = new LazyValue<Weapon>(SetupDefaultWeapon);
+        }
+
+        private void SetupDefaultWeapon()
+        {
+            return defaultWeapon;
+        }
 
         void Start()
         {
             if (currentWeapon == null)
             {
-                EquipWeapon(defaultWeapon);
+                EquipWeapon(defaultWeapon.Value);
             }
         }
 

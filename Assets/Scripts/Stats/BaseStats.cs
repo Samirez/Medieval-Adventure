@@ -17,7 +17,7 @@ namespace RPG.Stats
         public event Action onLevelUp;
 
         // Ensure currentLevel is never zero to avoid level-0 edge cases when other scripts query early.
-        int currentLevel = 1;
+        LazyValue<int> currentLevel;
         Experience experience;
         float lastXP;
         IModifierProvider[] modifierProviders;
@@ -25,7 +25,7 @@ namespace RPG.Stats
         private void Awake()
         {
             // Assign from serialized startingLevel (set by inspector) so Awake-time queries see the correct base level.
-            currentLevel = startingLevel;
+            currentLevel = new LazyValue<int>(() => CalculateLevel);
             // Cache the Experience component once during Awake to avoid repeated GetComponent calls.
             experience = GetComponent<Experience>();
             // Cache modifier providers to avoid allocations from GetComponents at runtime.
@@ -98,12 +98,12 @@ namespace RPG.Stats
 
         public int GetLevel()
         {
-            if (currentLevel < 1)
+            if (currentLevel.Value < 1)
             {
-                currentLevel = CalculateLevel();
+                currentLevel = new LazyValue<int>(() => CalculateLevel());
             }
-            
-            return currentLevel;
+
+            return currentLevel.Value;
         }
 
         private float GetAdditiveModifier(Stat stat)

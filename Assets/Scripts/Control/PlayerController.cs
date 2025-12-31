@@ -13,6 +13,10 @@ namespace RPG.Control
         void Awake()
         {
             playerHealth = GetComponent<Health>();
+            if (playerHealth == null)
+            {
+                Debug.LogError("PlayerController requires a Health component on the same GameObject.", this);
+            }
         }
 
         void Update()
