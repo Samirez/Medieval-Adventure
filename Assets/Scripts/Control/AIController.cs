@@ -28,10 +28,13 @@ namespace RPG.Control
 
         private void Awake()
         {
+            bool hasAllRequiredComponents = true;
+
             fighter = GetComponent<Fighter>();
             if (fighter == null)
             {
                 Debug.LogError($"Fighter component missing on '{gameObject.name}'. AIController requires a Fighter.");
+                hasAllRequiredComponents = false;
             }
 
             player = GameObject.FindWithTag("Player");
@@ -40,12 +43,19 @@ namespace RPG.Control
             if (health == null)
             {
                 Debug.LogError($"Health component missing on '{gameObject.name}'. AIController requires a Health.");
+                hasAllRequiredComponents = false;
             }
 
             mover = GetComponent<Mover>();
             if (mover == null)
             {
                 Debug.LogError($"Mover component missing on '{gameObject.name}'. AIController requires a Mover to patrol and move.");
+                hasAllRequiredComponents = false;
+            }
+
+            if (!hasAllRequiredComponents)
+            {
+                enabled = false;
             }
         }
 

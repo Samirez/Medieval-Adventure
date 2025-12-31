@@ -7,7 +7,8 @@
     public class LazyValue<T>
     {
         private T _value;
-        private bool _initialized = false;
+        private volatile bool _initialized = false;
+        private readonly object _sync = new object();
         private InitializerDelegate _initializer;
 
         public delegate T InitializerDelegate();
@@ -37,15 +38,28 @@
         {
             get
             {
-                // Ensure we init before returning a value.
-                ForceInit();
-                return _value;
+                lock (_sync)
+                {
+                    if (!_initialized)
+                    {
+                        if (_initializer == null)
+                        {
+                            throw new System.ArgumentNullException(nameof(_initializer));
+                        }
+                        _value = _initializer();
+                        _initialized = true;
+                    }
+                    return _value;
+                }
             }
             set
             {
-                // Don't use default init anymore.
-                _initialized = true;
-                _value = value;
+                lock (_sync)
+                {
+                    // Don't use default init anymore.
+                    _initialized = true;
+                    _value = value;
+                }
             }
         }
 
@@ -54,10 +68,17 @@
         /// </summary>
         public void ForceInit()
         {
-            if (!_initialized)
+            lock (_sync)
             {
-                _value = _initializer();
-                _initialized = true;
+                if (!_initialized)
+                {
+                    if (_initializer == null)
+                    {
+                        throw new System.ArgumentNullException(nameof(_initializer));
+                    }
+                    _value = _initializer();
+                    _initialized = true;
+                }
             }
         }
     }

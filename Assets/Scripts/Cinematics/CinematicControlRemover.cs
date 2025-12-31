@@ -19,6 +19,10 @@ namespace RPG.Cinematics
                 Debug.LogError("Player GameObject not found. Ensure a GameObject is tagged as 'Player'.");
             }
             director = GetComponent<PlayableDirector>();
+            if (director == null)
+            {
+                Debug.LogWarning($"PlayableDirector component not found on '{gameObject.name}'. CinematicControlRemover will not function.");
+            }
 
             if (player != null)
             {
@@ -49,6 +53,9 @@ namespace RPG.Cinematics
         {
             if (director != null)
             {
+                // If this component is disabled while a cinematic is playing,
+                // ensure player control is restored immediately.
+                EnableControl(director);
                 director.played -= DisableControl;
                 director.stopped -= EnableControl;
             }

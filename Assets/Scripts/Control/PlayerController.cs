@@ -16,6 +16,7 @@ namespace RPG.Control
             if (playerHealth == null)
             {
                 Debug.LogError("PlayerController requires a Health component on the same GameObject.", this);
+                enabled = false;
             }
         }
 

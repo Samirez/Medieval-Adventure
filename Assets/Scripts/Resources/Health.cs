@@ -11,11 +11,13 @@ namespace RPG.Resources
     {
         [SerializeField] float regenerationPercentage = 70f;
         LazyValue<float> health;
+        BaseStats baseStats;
         bool isDead = false;
 
 
         private void Awake()
         {
+            baseStats = GetComponent<BaseStats>();
             health = new LazyValue<float>(GetInitialHealth);
         }
 
@@ -38,59 +40,32 @@ namespace RPG.Resources
                 return 1f;
             }
         }
-
+        
         private void Start()
         {
-            GetComponent<BaseStats>().onLevelUp += UpdateHealthOnLevelUp;
-            if (health.value < 0)
+            if (baseStats == null) baseStats = GetComponent<BaseStats>();
+            if (baseStats != null)
             {
-                BaseStats baseStats = GetComponent<BaseStats>();
-                if (baseStats == null)
-                {
-                    Debug.LogWarning($"BaseStats component missing on {gameObject.name} during Start. Using fallback health value of 1.");
-                    health.value = 1f;
-                    isDead = false;
-                    return;
-                }
-
-                try
-                {
-                    health.value = baseStats.GetStat(Stat.Health);
-                }
-                catch (InvalidOperationException ex)
-                {
-                    Debug.LogWarning($"Failed to initialize health for {gameObject.name}: {ex.Message}. Using fallback health value of 1.");
-                    health.value = 1f;
-                    isDead = false;
-                }
+                baseStats.onLevelUp += UpdateHealthOnLevelUp;
             }
-        }
-
-        public bool IsDead()
-        {
-            return isDead;
-        }
-
-        public void TakeDamage(GameObject instigator, float damage)
-        {
-            // Ensure health is initialized to a sensible positive value before applying damage
-            if (health.value < 0f)
+            else
             {
-                Debug.LogWarning($"Health for {gameObject.name} was uninitialized (value {health.value}). Falling back to 1 before applying damage.");
-                health.value = 1f;
+                Debug.LogWarning($"BaseStats component missing on {gameObject.name}; level-up health regeneration disabled.");
             }
 
-            print($"{gameObject.name} took {damage} damage from {instigator.name}.");
-
-            health.value = Mathf.Max(health.value - damage, 0f);
-
-            if (health.value <= 0f)
+            // Ensure the lazy health value is initialized
+            try
             {
-                Die();
-                GrantExperience(instigator);
+                health.ForceInit();
             }
-        }
+            catch
+            {
+                // Fallback if LazyValue doesn't support ForceInit for some reason
+                health.value = GetInitialHealth();
+            }
 
+            isDead = health.value <= 0f;
+        }
         public float GetHealthPoints()
         {
             return health.value;
@@ -147,18 +122,13 @@ namespace RPG.Resources
             }
 
             // Compute percentage without mutating object state (command-query separation)
-            if (health.value < 0f)
+            float current = health.value;
+            if (current < 0f)
             {
-                Debug.LogWarning($"Health for {gameObject.name} is negative ({health.value}) when computing percentage. Using 0 for display calculations.");
+                Debug.LogWarning($"Health for {gameObject.name} is negative ({current}) when computing percentage. Using 0 for display calculations.");
             }
 
-            if (health.value < 0f)
-            {
-                // if negative, treat as zero for percentage
-                health.value = 0f;
-            }
-
-            float clampedHealth = Mathf.Clamp(health.value, 0f, maxHealth);
+            float clampedHealth = Mathf.Clamp(current, 0f, maxHealth);
 
             return 100f * (clampedHealth / maxHealth);
         }
@@ -198,7 +168,17 @@ namespace RPG.Resources
 
         private void UpdateHealthOnLevelUp()
         {
-            float newHealth = GetComponent<BaseStats>().GetStat(Stat.Health) * regenerationPercentage / 100f;
+            if (baseStats == null)
+            {
+                baseStats = GetComponent<BaseStats>();
+                if (baseStats == null)
+                {
+                    Debug.LogWarning($"BaseStats component missing on {gameObject.name}; cannot update health on level up.");
+                    return;
+                }
+            }
+
+            float newHealth = baseStats.GetStat(Stat.Health) * regenerationPercentage / 100f;
             health.value = Mathf.Max(health.value, newHealth);
         }
 
